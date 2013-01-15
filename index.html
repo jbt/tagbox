@@ -1,97 +1,69 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Autocompleter test</title>
-  <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
-  <script src="tagbox.min.js"></script>
-  <link rel="stylesheet" href="tagbox.css" />
-  <style>
-    .name{
-      font-weight: bold;
-      display: block;
-      position: absolute;
-      top: 5px;
-      left: 5px;
-      line-height: 1em;
-    }
-    .email{
-      color: #888;
-      font-size: 0.8em;
-      line-height: 1em;
-      position: absolute;
-      top: 23px;
-      left: 5px;
-    }
-    .user {
-      height: 40px !important;
-    }
-  </style>
-</head>
-<body>
+	<head>
+		<meta charset="utf8">
+		<title>Autocompleter test</title>
+		<script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+		<script src="tagbox.min.js"></script>
 
-<form>
+		<style>
+			/* Make sure you reset e'erything beforehand. */
+			* {
+				margin: 0;
+				padding: 0;
+			}
 
-  <input id="tags" type="text" value="23,2345" />
+			/* Although you can't see the box here, so add some padding. */
+			body {
+				padding: 100px;
+			}
+		</style>
+		<link rel="stylesheet" href="tagbox.css">
+	</head>
 
-</form>
+	<body>
 
+	<form>
+		<input autocapitalise="off" id="tags" type="text" value="1,2,4">
+	</form>
 
-<script>
+	<script>
+		$(function() {
+			var items = [
+			{
+				id: 1,
+				email: 'hello@lionelrichie.net',
+				name: 'Lionel Richie'
+			},
+			{
+				id: 2,
+				email: 'bob-the-builder@builders.com',
+				name: 'Bob D. Builder'
+			},
+			{
+				id: 4,
+				email: 'einstein@localhost',
+				name: 'Älbert ÉinStëiñ'
+			}
+			];
 
-$(function(){
-  $('#tags').tagbox({
-    items: [
-      {
-        id: 23,
-        email: 'jt@gosquared.com',
-        name: 'James Taylor'
-      },
-      {
-        id: 2345,
-        email: 'simon@gosquared.com',
-        name: 'Simon McManus'
-      },
-      {
-        id: 593,
-        email: 'n00b@gosquared.com',
-        name: 'Simon Tabor'
-      },
-      {
-        id: 931,
-        email: 'james@gosquared.com',
-        name: 'James Gill'
-      },
-      {
-        id: 6923,
-        email: 'idiot@gosquared.com',
-        name: 'Ben Swift'
-      },
-      {
-        id: 592,
-        email: 'geoff@gosquared.com',
-        name: 'Geoff Wagstaff'
-      }
-    ],
-    searchIn: [
-      'email',
-      'name'
-    ],
-    rowFormat: '<span class="name">{{name}}</span><span class="email">{{email}}</span>',
-    tokenFormat: '{{name}}',
-    valueField: 'id',
-    createNew: function(txt){
-      return {
-        td: txt,
-        email: txt,
-        name: txt
-      };
-    },
-    itemClass: 'user'
-   // allowNew: true
-  })
-});
-
-</script>
-
-</body>
+			$('#tags').tagbox({
+				items: items,
+				searchIn: ['email', 'name'],
+				rowFormat: '<span class="name">{{name}}</span><span class="email">{{email}}</span>',
+				tokenFormat: '{{name}}',
+				valueField: 'id',
+				createNew: function(txt){
+					return {
+						td: txt,
+						email: txt,
+						name: txt
+					};
+				},
+				itemClass: 'user'
+				// allowNew: true
+			});
+		});
+	</script>
+	</body>
 </html>
