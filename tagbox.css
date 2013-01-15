@@ -1,0 +1,78 @@
+.tagbox-wrapper {
+  display: inline-block;
+  width: 300px;
+  border: 1px solid #aaa;
+  position: relative;
+  border-radius: 3px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  font: 14px "Helvetica Neue", sans-serif;
+}
+
+.tagbox-wrapper input {
+  outline: none;
+  width: 40px;
+  border: 0;
+  -webkit-appearance: caret;
+  margin: 2px 4px;
+  height: 18px;
+}
+
+.tagbox-dropdown {
+  position: absolute;
+  top: 100%;
+  left: -1px;
+  right: -1px;
+  overflow: auto;
+  text-indent: 20px;
+  border: 1px solid #aaa;
+  background: white;
+}
+
+.tagbox-item {
+  position: relative;
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
+}
+
+.tagbox-item.selected {
+  background: #DFE9F9;
+}
+
+.tagbox-token {
+  display: inline-block;
+  margin: 2px;
+  padding: 0 5px;
+  border: 1px solid #61A7C3;
+  border-radius: 3px;
+  padding-right: 18px;
+  position: relative;
+  line-height: 18px;
+  height: 18px;
+  background: -webkit-linear-gradient(top, #D5EAFF, #BBD2EA);
+}
+
+.tagbox-token span {
+  display: inline-block;
+}
+
+.tagbox-token a {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 13px;
+  text-align: center;
+  border-radius: 0 1px 1px 0;
+  border-left: 1px solid #61A7C3;
+  margin: 0;
+  cursor: pointer;
+}
+
+.tagbox-token a:hover {
+  background: -webkit-linear-gradient(top, #B4C8DD, #C7DAED);
+}
+
+.tagbox-token.selected {
+  background: -webkit-linear-gradient(top, #8EB2D9, #89C0F8);
+}
