@@ -37,18 +37,6 @@
 		.tagbox-item.empty {
 			cursor: default;
 		}
-	.tagbox-item .name, .tagbox-item .email { /* The name and email within the dropdown */
-		display: block;
-		float: left;
-		width: 35%;
-
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-		.tagbox-item .email {
-			float: right;
-			width: 65%;
-		}
 
 .tagbox-token { /* The tag itself */
 	display: inline-block;
