@@ -277,7 +277,7 @@ var CompletionDropdown = function(completer, opts){
     this.el.css({
       top: o2.top - o3.top + input.height() + 1,
       left: o2.left - o3.left,
-      width: input.width()
+      width: input.outerWidth()
     });
   };
 
