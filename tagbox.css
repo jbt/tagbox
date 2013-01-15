@@ -97,8 +97,7 @@
 	}
 
 .tagbox-token {
-	float: left;
-	display: block;
+	display: inline-block;
 	height: 26px;
 	padding: 0 22px 0 12px;
 	margin: 6px 18px 0 -10px;
@@ -168,14 +167,19 @@
 	.tagbox-dropdown .empty {
 		color: #87919c;
 		text-align: center;
+		text-indent: 0;
 	}
 	.tagbox-item {
 		height: auto;
 		padding: 4px 0;
 		width: 100%;
+		text-indent: 20px;
 
 		border-bottom: 1px solid rgba(74,85,99,.3);
 	}
+		.tagbox-item:not(.empty).selected {
+			background: rgba(255,255,255,.6);
+		}
 		.tagbox-item:not(.empty):hover {
 			background: rgba(255,255,255,.3);
 		}
@@ -184,7 +188,4 @@
 			}
 		.tagbox-item:last-of-type {
 			border-bottom: none;
-		}
-		.tagbox-item .name {
-			text-indent: 20px;
 		}

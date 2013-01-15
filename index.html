@@ -21,6 +21,20 @@
 			body {
 				padding: 100px;
 			}
+
+			
+			.tagbox-item .name, .tagbox-item .email { /* The name and email within the dropdown */
+				display: block;
+				float: left;
+				width: 35%;
+
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+				.tagbox-item .email {
+					float: right;
+					width: 65%;
+				}
 		</style>
 		<link rel="stylesheet" href="tagbox.css">
 	</head>
@@ -65,7 +79,7 @@
 					};
 				},
 				itemClass: 'user'
-				// allowNew: true
+				,allowNew: true
 			});
 		});
 	</script>
