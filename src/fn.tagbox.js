@@ -2,7 +2,7 @@ $.fn['tagbox'] = function(opts){
 
   var defaults = {
     'maxHeight': 200,
-    'maxItems': 20,
+    'maxListItems': 20,
     'rowFormat': '{{name}}',
     'tokenFormat': '{{name}}',
     'valueField': 'name',
@@ -12,7 +12,8 @@ $.fn['tagbox'] = function(opts){
     'allowNew': false,
     'newText': '{{txt}}',
     'emptyText': 'Not Found',
-    'dropdownContainer': 'body'
+    'dropdownContainer': 'body',
+    'maxItems': -1
   };
 
   var options = $.extend({}, defaults, opts);

@@ -355,7 +355,7 @@ var CompletionDropdown = function(completer, opts){
     this.rows = [];
 
     if(items.length > 0){
-      for(var i = 0; i < Math.min(items.length, opts['maxItems']); i += 1){
+      for(var i = 0; i < Math.min(items.length, opts['maxListItems']); i += 1){
         var row = new DropdownRow(items[i], opts);
         row.el.appendTo(this.el.find('.list'));
         row.el.on('mouseover', function(self, row){ return function(){
@@ -578,6 +578,12 @@ var TagBox = function(el, opts){
       }
     }
 
+    // Don't allow typing if we've hit the maximum
+    if(self.tokens.length === opts['maxItems']){
+      newInput.val('');
+      return false;
+    }
+
     //if(String.fromCharCode(e.which)){
       setTimeout(updateDropdown, 10);
     //}
@@ -738,7 +744,7 @@ $.fn['tagbox'] = function(opts){
 
   var defaults = {
     'maxHeight': 200,
-    'maxItems': 20,
+    'maxListItems': 20,
     'rowFormat': '{{name}}',
     'tokenFormat': '{{name}}',
     'valueField': 'name',
@@ -748,7 +754,8 @@ $.fn['tagbox'] = function(opts){
     'allowNew': false,
     'newText': '{{txt}}',
     'emptyText': 'Not Found',
-    'dropdownContainer': 'body'
+    'dropdownContainer': 'body',
+    'maxItems': -1
   };
 
   var options = $.extend({}, defaults, opts);

@@ -104,7 +104,7 @@ var CompletionDropdown = function(completer, opts){
     this.rows = [];
 
     if(items.length > 0){
-      for(var i = 0; i < Math.min(items.length, opts['maxItems']); i += 1){
+      for(var i = 0; i < Math.min(items.length, opts['maxListItems']); i += 1){
         var row = new DropdownRow(items[i], opts);
         row.el.appendTo(this.el.find('.list'));
         row.el.on('mouseover', function(self, row){ return function(){

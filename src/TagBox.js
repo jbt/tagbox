@@ -157,6 +157,12 @@ var TagBox = function(el, opts){
       }
     }
 
+    // Don't allow typing if we've hit the maximum
+    if(self.tokens.length === opts['maxItems']){
+      newInput.val('');
+      return false;
+    }
+
     //if(String.fromCharCode(e.which)){
       setTimeout(updateDropdown, 10);
     //}
