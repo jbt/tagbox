@@ -478,12 +478,18 @@ var TagBox = function(el, opts){
   if(input.val()){
     var items = opts['items'];
     var bits = input.val().split(opts['delimiter']);
+    var found;
     for(var i = 0; i < bits.length; i += 1){
+      found = false;
       for(var j = 0; j < items.length; j += 1){
         if(items[j][opts['valueField']] == bits[i]){
           addToken(items[j]);
+          found = true;
           break;
         }
+      }
+      if(!found && opts['allowNew']){
+        addToken(opts['createNew'](bits[i]));
       }
     }
   }
@@ -715,10 +721,10 @@ var TagBox = function(el, opts){
 
     newInput.width(
       Math.min(
-        self.wrapper.width() - 8,
+        self.wrapper.width() - 16,
         Math.max(
-          self.wrapper.width() - newInput.offset().left + self.wrapper.offset().left - 8,
-          resizer.width() + 20,
+          self.wrapper.width() - newInput.offset().left + self.wrapper.offset().left - 16,
+          resizer.width(),
           1
         )
       )
