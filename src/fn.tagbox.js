@@ -13,7 +13,8 @@ $.fn['tagbox'] = function(opts){
     'newText': '{{txt}}',
     'emptyText': 'Not Found',
     'dropdownContainer': 'body',
-    'maxItems': -1
+    'maxItems': -1,
+    'autoShow': false
   };
 
   var options = $.extend({}, defaults, opts);

@@ -39,7 +39,7 @@ var CompletionDropdown = function(completer, opts){
   };
 
   this.getSelected = function(){
-    return this.selectedRow.item;
+    if(this.selectedRow) return this.selectedRow.item;
   };
 
   this.selectNext = function(){
@@ -121,10 +121,12 @@ var CompletionDropdown = function(completer, opts){
         this.rows.push(row);
       }
       this.selectRow(0);
-    }else{
+    }else if(!opts['allowNew']){
       $('<div class="tagbox-item empty"/>')
         .text(opts['emptyText'])
         .appendTo(this.el.find('.list'));
+      this.selectRow(-1);
+    }else{
       this.selectRow(-1);
     }
 

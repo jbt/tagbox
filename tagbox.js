@@ -290,7 +290,7 @@ var CompletionDropdown = function(completer, opts){
   };
 
   this.getSelected = function(){
-    return this.selectedRow.item;
+    if(this.selectedRow) return this.selectedRow.item;
   };
 
   this.selectNext = function(){
@@ -372,10 +372,12 @@ var CompletionDropdown = function(completer, opts){
         this.rows.push(row);
       }
       this.selectRow(0);
-    }else{
+    }else if(!opts['allowNew']){
       $('<div class="tagbox-item empty"/>')
         .text(opts['emptyText'])
         .appendTo(this.el.find('.list'));
+      this.selectRow(-1);
+    }else{
       this.selectRow(-1);
     }
 
@@ -453,6 +455,7 @@ var TagBox = function(el, opts){
         if(!self.dontHide) dropdown.hide();
       }, 50);
     })
+    .bind('focus', updateDropdown)
     .bind('keydown', handleKeyDown)
     .appendTo(wrapper);
 
@@ -565,15 +568,17 @@ var TagBox = function(el, opts){
 
         if(selection){
           addToken(selection);
+          return false;
         }else if(opts['allowNew']){
           addToken(opts['createNew'](newInput.val()));
+          return false;
         }
-        return false;
       }
     }else{
-      if(e.keyCode == 13 ||
+      if(e.keyCode == 13// ||
      //  e.keyCode == 32 ||
-         e.keyCode == 9  ){
+     //    e.keyCode == 9  
+     ){
         return false;
       }
     }
@@ -597,7 +602,7 @@ var TagBox = function(el, opts){
     self.tokens.push(t);
 
     newInput.val('');
-    resizeInputBox();
+    resizeInputBox(true);
     dropdown.hide();
 
     updateInput();
@@ -624,6 +629,8 @@ var TagBox = function(el, opts){
         selectToken(self.tokens[idx]);
       }
     }
+
+    updateDropdown();
 
   }
 
@@ -686,27 +693,35 @@ var TagBox = function(el, opts){
     var term = newInput.val();
     var relevance = scoresObject();
 
-    if(term === ''){
+    if(term === '' && !opts['autoShow']){
       dropdown.hide();
       return;
     }
 
-    for(var i = 0; i < items.length; i += 1){
-      var theItem = {
-        item: items[i],
-        score: fuzzyRank(items[i], term, relevance)
-      };
-      if(theItem.score > 0 && (opts['allowDuplicates'] || !alreadyHaveItem(theItem.item))){
-        itemsToShow.push(theItem);
+    if(term !== ''){
+      for(var i = 0; i < items.length; i += 1){
+        var theItem = {
+          item: items[i],
+          score: fuzzyRank(items[i], term, relevance)
+        };
+        if(theItem.score > 0 && (opts['allowDuplicates'] || !alreadyHaveItem(theItem.item))){
+          itemsToShow.push(theItem);
+        }
       }
-    }
 
-    itemsToShow = itemsToShow.sort(function(a, b){
-      return b.score - a.score;
-    });
+      itemsToShow = itemsToShow.sort(function(a, b){
+        return b.score - a.score;
+      });
 
-    for(var i = 0; i < itemsToShow.length; i += 1){
-      itemsToShow[i] = itemsToShow[i].item;
+      for(var i = 0; i < itemsToShow.length; i += 1){
+        itemsToShow[i] = itemsToShow[i].item;
+      }
+    }else{
+      for(var i = 0; i < items.length; i += 1){
+        if(opts['allowDuplicates'] || !alreadyHaveItem(items[i])){
+          itemsToShow.push(items[i]);
+        }
+      }
     }
 
     dropdown.showItems(itemsToShow);
@@ -755,7 +770,8 @@ $.fn['tagbox'] = function(opts){
     'newText': '{{txt}}',
     'emptyText': 'Not Found',
     'dropdownContainer': 'body',
-    'maxItems': -1
+    'maxItems': -1,
+    'autoShow': false
   };
 
   var options = $.extend({}, defaults, opts);
