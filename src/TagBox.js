@@ -74,6 +74,8 @@ var TagBox = function(el, opts){
     }
   }
 
+  var ready = true;
+
   resizeInputBox(true);
   $(window).on('resize', function(){
     resizeInputBox(true);
@@ -180,7 +182,7 @@ var TagBox = function(el, opts){
 
     self.tokens.push(t);
 
-    newInput.val('');
+    if(ready) newInput.val('');
     resizeInputBox(true);
     dropdown.hide();
 

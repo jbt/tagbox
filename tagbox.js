@@ -253,7 +253,7 @@ var DropdownRow = function(item, opts){
 
   var self = this;
 
-  var el = $('<div class="tagbox-item" />');
+  var el = self.el = $('<div class="tagbox-item" />');
 
   if(opts['itemClass']) el.addClass(opts['itemClass']);
 
@@ -532,6 +532,8 @@ var TagBox = function(el, opts){
     }
   }
 
+  var ready = true;
+
   resizeInputBox(true);
   $(window).on('resize', function(){
     resizeInputBox(true);
@@ -638,7 +640,7 @@ var TagBox = function(el, opts){
 
     self.tokens.push(t);
 
-    newInput.val('');
+    if(ready) newInput.val('');
     resizeInputBox(true);
     dropdown.hide();
 

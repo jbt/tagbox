@@ -2,7 +2,7 @@ var DropdownRow = function(item, opts){
 
   var self = this;
 
-  var el = $('<div class="tagbox-item" />');
+  var el = self.el = $('<div class="tagbox-item" />');
 
   if(opts['itemClass']) el.addClass(opts['itemClass']);
 
