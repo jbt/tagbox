@@ -1,21 +1,25 @@
 var CompletionDropdown = function(completer, opts){
 
-  this.el = $('<div class="tagbox-dropdown"><div class="list"></div></div>')
+  var self = this;
+
+  var selectedRow, selectedIndex, rows;
+
+  var el = self.el = $('<div class="tagbox-dropdown"><div class="list"></div></div>')
     .css({
       maxHeight: opts['maxHeight']
     })
     .hide();
 
   if(opts['allowNew']){
-    this.newRow = $('<div class="tagbox-item new-item" />').prependTo(this.el);
+    var newRow = $('<div class="tagbox-item new-item" />').prependTo(el);
   }
 
-  this.updatePosition = function(input){
-    var o1 = this.el.offset();
+  self.updatePosition = function(input){
+    var o1 = el.offset();
     var o2 = input.offset();
-    var o3 = this.el.parent().offset();
+    var o3 = el.parent().offset();
 
-    if(this.el.parent().is('body')){
+    if(el.parent().is('body')){
       // TODO figure out how to take into account margin/padding on body element properly
       o3 = {
         top: 0,
@@ -23,93 +27,93 @@ var CompletionDropdown = function(completer, opts){
       };
     }
 
-    this.el.css({
+    el.css({
       top: o2.top - o3.top + input.height() + 1,
       left: o2.left - o3.left,
       width: input.outerWidth()
     });
   };
 
-  this.show = function(){
-    this.el.show();
+  self.show = function(){
+    el.show();
   };
 
-  this.hide = function(){
-    this.el.hide();
+  self.hide = function(){
+    el.hide();
   };
 
-  this.getSelected = function(){
-    if(this.selectedRow) return this.selectedRow.item;
+  self.getSelected = function(){
+    if(selectedRow) return selectedRow.item;
   };
 
-  this.selectNext = function(){
-    if(this.selectedIndex === this.rows.length - 1){
-      if(opts['allowNew'] || this.rows.length === 0){
-        this.selectRow(-1);
+  self.selectNext = function(){
+    if(selectedIndex === rows.length - 1){
+      if(opts['allowNew'] || rows.length === 0){
+        selectRow(-1);
       }else{
-        this.selectRow(0);
+        selectRow(0);
       }
     }else{
-      this.selectRow(this.selectedIndex + 1);
+      selectRow(selectedIndex + 1);
     }
   };
 
-  this.selectPrevious = function(){
-    if(this.selectedIndex === 0){
+  self.selectPrevious = function(){
+    if(selectedIndex === 0){
       if(opts['allowNew']){
-        this.selectRow(-1);
+        selectRow(-1);
       }else{
-        this.selectRow(this.rows.length - 1);
+        selectRow(rows.length - 1);
       }
     }else{
-      if(this.selectedIndex === -1) this.selectedIndex = this.rows.length;
-      this.selectRow(this.selectedIndex - 1);
+      if(selectedIndex === -1) selectedIndex = rows.length;
+      selectRow(selectedIndex - 1);
     }
   };
 
-  this.selectRow = function(idx){
-    if(this.selectedRow){
-      this.selectedRow.deselect();
+  function selectRow(idx){
+    if(selectedRow){
+      selectedRow.deselect();
     }
-    this.newRow && this.newRow.removeClass('selected');
+    newRow && newRow.removeClass('selected');
     if(typeof idx !== 'number'){
-      idx = this.rows.indexOf(idx);
+      idx = rows.indexOf(idx);
     }
     if(idx >= 0){
-      this.selectedRow = this.rows[idx];
-      this.selectedRow.select();
-      this.scrollToRow(this.selectedRow.el);
+      selectedRow = rows[idx];
+      selectedRow.select();
+      scrollToRow(selectedRow.el);
     }else{
-      this.selectedRow = false;
-      this.newRow && this.newRow.addClass('selected');
+      selectedRow = false;
+      newRow && newRow.addClass('selected');
     }
-    this.selectedIndex = idx;
-  };
+    selectedIndex = idx;
+  }
 
-  this.scrollToRow = function(r){
-    var o = r.offset().top - this.el.offset().top - this.el.scrollTop();
+  function scrollToRow(r){
+    var o = r.offset().top - el.offset().top - el.scrollTop();
     if(o < 0){
-      this.el.scrollTop(r.offset().top - this.el.offset().top);
-    }else if(o > this.el.height() - r.height()){
-      this.el.scrollTop(o + this.el.scrollTop() - this.el.height() + r.height());
+      el.scrollTop(r.offset().top - el.offset().top);
+    }else if(o > el.height() - r.height()){
+      el.scrollTop(o + el.scrollTop() - el.height() + r.height());
     }
+  }
+
+  self.setEmptyItem = function(txt){
+    el.find('.new-item').text(opts['newText'].replace(/\{\{txt\}\}/g, txt));
   };
 
-  this.setEmptyItem = function(txt){
-    this.el.find('.new-item').text(opts['newText'].replace(/\{\{txt\}\}/g, txt));
-  };
-
-  this.showItems = function(items){
-    this.el.find('.list').empty();
-    this.rows = [];
+  self.showItems = function(items){
+    el.find('.list').empty();
+    rows = [];
 
     if(items.length > 0){
       for(var i = 0; i < Math.min(items.length, opts['maxListItems']); i += 1){
         var row = new DropdownRow(items[i], opts);
-        row.el.appendTo(this.el.find('.list'));
-        row.el.on('mouseover', function(self, row){ return function(){
+        row.el.appendTo(el.find('.list'));
+        row.el.on('mouseover', function(row){ return function(){
           self.selectRow(row);
-        }; }(this, row));
+        }; }(row));
         row.el.on('mousedown', function(){
           completer.dontHide = true;
         }).on('mouseup', function(){
@@ -118,18 +122,18 @@ var CompletionDropdown = function(completer, opts){
         row.el.on('click', function(item){ return function(){
           completer.addToken(item);
         }; }(items[i]));
-        this.rows.push(row);
+        rows.push(row);
       }
-      this.selectRow(0);
+      selectRow(0);
     }else if(!opts['allowNew']){
       $('<div class="tagbox-item empty"/>')
         .text(opts['emptyText'])
-        .appendTo(this.el.find('.list'));
-      this.selectRow(-1);
+        .appendTo(el.find('.list'));
+      selectRow(-1);
     }else{
-      this.selectRow(-1);
+      selectRow(-1);
     }
 
-    this.show();
+    self.show();
   };
 };

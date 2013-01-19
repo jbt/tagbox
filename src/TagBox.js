@@ -26,21 +26,21 @@ var TagBox = function(el, opts){
     .insertBefore(self.input);
 
   var newInput = $('<input type="text" />')
-    .bind('keyup keydown blur update change', resizeInputBox)
-    .bind('blur', function(){
+    .on('keyup keydown blur update change', resizeInputBox)
+    .on('blur', function(){
       setTimeout(function(){
         if(!self.dontHide) dropdown.hide();
       }, 50);
     })
-    .bind('focus', updateDropdown)
-    .bind('keydown', handleKeyDown)
+    .on('focus', updateDropdown)
+    .on('keydown', handleKeyDown)
     .appendTo(wrapper);
 
   var resizer = $('<span />')
     .appendTo(wrapper)
     .css({
       position: 'absolute',
-      left: -99999,
+      left: -100000,
       width: 'auto',
       display: 'inline-block',
       whiteSpace: 'nowrap',
@@ -75,7 +75,7 @@ var TagBox = function(el, opts){
   }
 
   resizeInputBox(true);
-  $(window).bind('resize', function(){
+  $(window).on('resize', function(){
     resizeInputBox(true);
   });
 
@@ -85,7 +85,9 @@ var TagBox = function(el, opts){
     var cursorFarRight = (newInput.val().length == newInput[0].selectionStart);
     var cursorFarLeft = (newInput[0].selectionEnd === 0);
 
-    if(e.keyCode === 37){
+    var theKeyCode = e.keyCode;
+
+    if(theKeyCode === 37){
       if(selectedToken){
         if(selectedToken === self.tokens[0]){
           deselectCurrentToken();
@@ -99,7 +101,7 @@ var TagBox = function(el, opts){
       }
     }
 
-    if(e.keyCode === 39){
+    if(theKeyCode === 39){
       if(selectedToken){
         if(selectedToken === self.tokens[self.tokens.length - 1]){
           deselectCurrentToken();
@@ -114,33 +116,33 @@ var TagBox = function(el, opts){
     }
 
     if(selectedToken &&
-      (e.keyCode === 46 || // delete
-       e.keyCode === 8 )   // backspace
+      (theKeyCode === 46 || // delete
+       theKeyCode === 8 )   // backspace
     ){
-      removeToken(selectedToken, e.keyCode === 8 ? -1 : 1);
+      removeToken(selectedToken, theKeyCode === 8 ? -1 : 1);
       return false;
     }
 
-    if(e.keyCode === 8 && cursorFarLeft && self.tokens.length){
+    if(theKeyCode === 8 && cursorFarLeft && self.tokens.length){
       selectToken(self.tokens[self.tokens.length - 1]);
       return false;
     }
 
     if(newInput.val()){
-      if(e.keyCode === 38){
+      if(theKeyCode === 38){
         dropdown.selectPrevious();
         return false;
       }
-      if(e.keyCode === 40){
+      if(theKeyCode === 40){
         dropdown.selectNext();
         return false;
       }
 
-      if((e.keyCode == 39 &&
+      if((theKeyCode == 39 &&
             cursorFarRight) || // right, but only if we're at the furthest
-          e.keyCode == 13 || // enter
-    //    e.keyCode == 32 || // space
-          e.keyCode == 9  ){ // tab
+          theKeyCode == 13 || // enter
+    //    theKeyCode == 32 || // space
+          theKeyCode == 9  ){ // tab
         var selection = dropdown.getSelected();
 
         if(selection){
@@ -152,9 +154,9 @@ var TagBox = function(el, opts){
         }
       }
     }else{
-      if(e.keyCode == 13// ||
-     //  e.keyCode == 32 ||
-     //    e.keyCode == 9  
+      if(theKeyCode == 13// ||
+     //  theKeyCode == 32 ||
+     //    theKeyCode == 9
      ){
         return false;
       }

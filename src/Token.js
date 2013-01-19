@@ -1,10 +1,12 @@
 var Token = function(item, opts){
 
-  var el = this.el = $('<div class="tagbox-token">' +
+  var self = this;
+
+  var el = self.el = $('<div class="tagbox-token">' +
                           '<span></span>' +
                           '<a>&times;</a>' +
                         '</div>')
-                        .data('token', this);
+                        .data('token', self);
 
   var format = opts['tokenFormat'];
 
@@ -16,22 +18,22 @@ var Token = function(item, opts){
     el.children('span').html(format(item));
   }
 
-  this.value = item[opts['valueField']];
-  this.item = item;
+  self.value = item[opts['valueField']];
+  self.item = item;
 
 
-  this.remove = function(){
-    this.el.data('token', null);
-    this.el.remove();
-    this.item = null;
-    this.el = null;
+  self.remove = function(){
+    el.data('token', null);
+    el.remove();
+    self.item = null;
+    self.el = null;
   };
 
-  this.select = function(){
-    this.el.addClass('selected');
+  self.select = function(){
+    el.addClass('selected');
   };
 
-  this.deselect = function(){
-    this.el.removeClass('selected');
+  self.deselect = function(){
+    el.removeClass('selected');
   };
 };

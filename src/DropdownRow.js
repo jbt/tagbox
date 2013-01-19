@@ -1,27 +1,29 @@
 var DropdownRow = function(item, opts){
 
-  this.el = $('<div class="tagbox-item" />');
+  var self = this;
 
-  if(opts['itemClass']) this.el.addClass(opts['itemClass']);
+  var el = $('<div class="tagbox-item" />');
 
-  this.item = item;
+  if(opts['itemClass']) el.addClass(opts['itemClass']);
+
+  self.item = item;
 
   var format = opts['rowFormat'];
 
   if(typeof format == 'string'){
-    this.el.html(format.replace(/\{\{([^}]*)\}\}/g, function(match, field){
+    el.html(format.replace(/\{\{([^}]*)\}\}/g, function(match, field){
       return item[field];
     }));
   }else{
-    this.el.html(format(item));
+    el.html(format(item));
   }
 
-  this.select = function(){
-    this.el.addClass('selected');
+  self.select = function(){
+    el.addClass('selected');
   };
 
-  this.deselect = function(){
-    this.el.removeClass('selected');
+  self.deselect = function(){
+    el.removeClass('selected');
   };
 
 };

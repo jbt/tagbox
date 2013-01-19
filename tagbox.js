@@ -251,49 +251,55 @@ var fuzzyRank = (function(){
 })();
 var DropdownRow = function(item, opts){
 
-  this.el = $('<div class="tagbox-item" />');
+  var self = this;
 
-  if(opts['itemClass']) this.el.addClass(opts['itemClass']);
+  var el = $('<div class="tagbox-item" />');
 
-  this.item = item;
+  if(opts['itemClass']) el.addClass(opts['itemClass']);
+
+  self.item = item;
 
   var format = opts['rowFormat'];
 
   if(typeof format == 'string'){
-    this.el.html(format.replace(/\{\{([^}]*)\}\}/g, function(match, field){
+    el.html(format.replace(/\{\{([^}]*)\}\}/g, function(match, field){
       return item[field];
     }));
   }else{
-    this.el.html(format(item));
+    el.html(format(item));
   }
 
-  this.select = function(){
-    this.el.addClass('selected');
+  self.select = function(){
+    el.addClass('selected');
   };
 
-  this.deselect = function(){
-    this.el.removeClass('selected');
+  self.deselect = function(){
+    el.removeClass('selected');
   };
 
 };
 var CompletionDropdown = function(completer, opts){
 
-  this.el = $('<div class="tagbox-dropdown"><div class="list"></div></div>')
+  var self = this;
+
+  var selectedRow, selectedIndex, rows;
+
+  var el = self.el = $('<div class="tagbox-dropdown"><div class="list"></div></div>')
     .css({
       maxHeight: opts['maxHeight']
     })
     .hide();
 
   if(opts['allowNew']){
-    this.newRow = $('<div class="tagbox-item new-item" />').prependTo(this.el);
+    var newRow = $('<div class="tagbox-item new-item" />').prependTo(el);
   }
 
-  this.updatePosition = function(input){
-    var o1 = this.el.offset();
+  self.updatePosition = function(input){
+    var o1 = el.offset();
     var o2 = input.offset();
-    var o3 = this.el.parent().offset();
+    var o3 = el.parent().offset();
 
-    if(this.el.parent().is('body')){
+    if(el.parent().is('body')){
       // TODO figure out how to take into account margin/padding on body element properly
       o3 = {
         top: 0,
@@ -301,93 +307,93 @@ var CompletionDropdown = function(completer, opts){
       };
     }
 
-    this.el.css({
+    el.css({
       top: o2.top - o3.top + input.height() + 1,
       left: o2.left - o3.left,
       width: input.outerWidth()
     });
   };
 
-  this.show = function(){
-    this.el.show();
+  self.show = function(){
+    el.show();
   };
 
-  this.hide = function(){
-    this.el.hide();
+  self.hide = function(){
+    el.hide();
   };
 
-  this.getSelected = function(){
-    if(this.selectedRow) return this.selectedRow.item;
+  self.getSelected = function(){
+    if(selectedRow) return selectedRow.item;
   };
 
-  this.selectNext = function(){
-    if(this.selectedIndex === this.rows.length - 1){
-      if(opts['allowNew'] || this.rows.length === 0){
-        this.selectRow(-1);
+  self.selectNext = function(){
+    if(selectedIndex === rows.length - 1){
+      if(opts['allowNew'] || rows.length === 0){
+        selectRow(-1);
       }else{
-        this.selectRow(0);
+        selectRow(0);
       }
     }else{
-      this.selectRow(this.selectedIndex + 1);
+      selectRow(selectedIndex + 1);
     }
   };
 
-  this.selectPrevious = function(){
-    if(this.selectedIndex === 0){
+  self.selectPrevious = function(){
+    if(selectedIndex === 0){
       if(opts['allowNew']){
-        this.selectRow(-1);
+        selectRow(-1);
       }else{
-        this.selectRow(this.rows.length - 1);
+        selectRow(rows.length - 1);
       }
     }else{
-      if(this.selectedIndex === -1) this.selectedIndex = this.rows.length;
-      this.selectRow(this.selectedIndex - 1);
+      if(selectedIndex === -1) selectedIndex = rows.length;
+      selectRow(selectedIndex - 1);
     }
   };
 
-  this.selectRow = function(idx){
-    if(this.selectedRow){
-      this.selectedRow.deselect();
+  function selectRow(idx){
+    if(selectedRow){
+      selectedRow.deselect();
     }
-    this.newRow && this.newRow.removeClass('selected');
+    newRow && newRow.removeClass('selected');
     if(typeof idx !== 'number'){
-      idx = this.rows.indexOf(idx);
+      idx = rows.indexOf(idx);
     }
     if(idx >= 0){
-      this.selectedRow = this.rows[idx];
-      this.selectedRow.select();
-      this.scrollToRow(this.selectedRow.el);
+      selectedRow = rows[idx];
+      selectedRow.select();
+      scrollToRow(selectedRow.el);
     }else{
-      this.selectedRow = false;
-      this.newRow && this.newRow.addClass('selected');
+      selectedRow = false;
+      newRow && newRow.addClass('selected');
     }
-    this.selectedIndex = idx;
-  };
+    selectedIndex = idx;
+  }
 
-  this.scrollToRow = function(r){
-    var o = r.offset().top - this.el.offset().top - this.el.scrollTop();
+  function scrollToRow(r){
+    var o = r.offset().top - el.offset().top - el.scrollTop();
     if(o < 0){
-      this.el.scrollTop(r.offset().top - this.el.offset().top);
-    }else if(o > this.el.height() - r.height()){
-      this.el.scrollTop(o + this.el.scrollTop() - this.el.height() + r.height());
+      el.scrollTop(r.offset().top - el.offset().top);
+    }else if(o > el.height() - r.height()){
+      el.scrollTop(o + el.scrollTop() - el.height() + r.height());
     }
+  }
+
+  self.setEmptyItem = function(txt){
+    el.find('.new-item').text(opts['newText'].replace(/\{\{txt\}\}/g, txt));
   };
 
-  this.setEmptyItem = function(txt){
-    this.el.find('.new-item').text(opts['newText'].replace(/\{\{txt\}\}/g, txt));
-  };
-
-  this.showItems = function(items){
-    this.el.find('.list').empty();
-    this.rows = [];
+  self.showItems = function(items){
+    el.find('.list').empty();
+    rows = [];
 
     if(items.length > 0){
       for(var i = 0; i < Math.min(items.length, opts['maxListItems']); i += 1){
         var row = new DropdownRow(items[i], opts);
-        row.el.appendTo(this.el.find('.list'));
-        row.el.on('mouseover', function(self, row){ return function(){
+        row.el.appendTo(el.find('.list'));
+        row.el.on('mouseover', function(row){ return function(){
           self.selectRow(row);
-        }; }(this, row));
+        }; }(row));
         row.el.on('mousedown', function(){
           completer.dontHide = true;
         }).on('mouseup', function(){
@@ -396,28 +402,30 @@ var CompletionDropdown = function(completer, opts){
         row.el.on('click', function(item){ return function(){
           completer.addToken(item);
         }; }(items[i]));
-        this.rows.push(row);
+        rows.push(row);
       }
-      this.selectRow(0);
+      selectRow(0);
     }else if(!opts['allowNew']){
       $('<div class="tagbox-item empty"/>')
         .text(opts['emptyText'])
-        .appendTo(this.el.find('.list'));
-      this.selectRow(-1);
+        .appendTo(el.find('.list'));
+      selectRow(-1);
     }else{
-      this.selectRow(-1);
+      selectRow(-1);
     }
 
-    this.show();
+    self.show();
   };
 };
 var Token = function(item, opts){
 
-  var el = this.el = $('<div class="tagbox-token">' +
+  var self = this;
+
+  var el = self.el = $('<div class="tagbox-token">' +
                           '<span></span>' +
                           '<a>&times;</a>' +
                         '</div>')
-                        .data('token', this);
+                        .data('token', self);
 
   var format = opts['tokenFormat'];
 
@@ -429,23 +437,23 @@ var Token = function(item, opts){
     el.children('span').html(format(item));
   }
 
-  this.value = item[opts['valueField']];
-  this.item = item;
+  self.value = item[opts['valueField']];
+  self.item = item;
 
 
-  this.remove = function(){
-    this.el.data('token', null);
-    this.el.remove();
-    this.item = null;
-    this.el = null;
+  self.remove = function(){
+    el.data('token', null);
+    el.remove();
+    self.item = null;
+    self.el = null;
   };
 
-  this.select = function(){
-    this.el.addClass('selected');
+  self.select = function(){
+    el.addClass('selected');
   };
 
-  this.deselect = function(){
-    this.el.removeClass('selected');
+  self.deselect = function(){
+    el.removeClass('selected');
   };
 };
 var TagBox = function(el, opts){
@@ -476,21 +484,21 @@ var TagBox = function(el, opts){
     .insertBefore(self.input);
 
   var newInput = $('<input type="text" />')
-    .bind('keyup keydown blur update change', resizeInputBox)
-    .bind('blur', function(){
+    .on('keyup keydown blur update change', resizeInputBox)
+    .on('blur', function(){
       setTimeout(function(){
         if(!self.dontHide) dropdown.hide();
       }, 50);
     })
-    .bind('focus', updateDropdown)
-    .bind('keydown', handleKeyDown)
+    .on('focus', updateDropdown)
+    .on('keydown', handleKeyDown)
     .appendTo(wrapper);
 
   var resizer = $('<span />')
     .appendTo(wrapper)
     .css({
       position: 'absolute',
-      left: -99999,
+      left: -100000,
       width: 'auto',
       display: 'inline-block',
       whiteSpace: 'nowrap',
@@ -525,7 +533,7 @@ var TagBox = function(el, opts){
   }
 
   resizeInputBox(true);
-  $(window).bind('resize', function(){
+  $(window).on('resize', function(){
     resizeInputBox(true);
   });
 
@@ -535,7 +543,9 @@ var TagBox = function(el, opts){
     var cursorFarRight = (newInput.val().length == newInput[0].selectionStart);
     var cursorFarLeft = (newInput[0].selectionEnd === 0);
 
-    if(e.keyCode === 37){
+    var theKeyCode = e.keyCode;
+
+    if(theKeyCode === 37){
       if(selectedToken){
         if(selectedToken === self.tokens[0]){
           deselectCurrentToken();
@@ -549,7 +559,7 @@ var TagBox = function(el, opts){
       }
     }
 
-    if(e.keyCode === 39){
+    if(theKeyCode === 39){
       if(selectedToken){
         if(selectedToken === self.tokens[self.tokens.length - 1]){
           deselectCurrentToken();
@@ -564,33 +574,33 @@ var TagBox = function(el, opts){
     }
 
     if(selectedToken &&
-      (e.keyCode === 46 || // delete
-       e.keyCode === 8 )   // backspace
+      (theKeyCode === 46 || // delete
+       theKeyCode === 8 )   // backspace
     ){
-      removeToken(selectedToken, e.keyCode === 8 ? -1 : 1);
+      removeToken(selectedToken, theKeyCode === 8 ? -1 : 1);
       return false;
     }
 
-    if(e.keyCode === 8 && cursorFarLeft && self.tokens.length){
+    if(theKeyCode === 8 && cursorFarLeft && self.tokens.length){
       selectToken(self.tokens[self.tokens.length - 1]);
       return false;
     }
 
     if(newInput.val()){
-      if(e.keyCode === 38){
+      if(theKeyCode === 38){
         dropdown.selectPrevious();
         return false;
       }
-      if(e.keyCode === 40){
+      if(theKeyCode === 40){
         dropdown.selectNext();
         return false;
       }
 
-      if((e.keyCode == 39 &&
+      if((theKeyCode == 39 &&
             cursorFarRight) || // right, but only if we're at the furthest
-          e.keyCode == 13 || // enter
-    //    e.keyCode == 32 || // space
-          e.keyCode == 9  ){ // tab
+          theKeyCode == 13 || // enter
+    //    theKeyCode == 32 || // space
+          theKeyCode == 9  ){ // tab
         var selection = dropdown.getSelected();
 
         if(selection){
@@ -602,9 +612,9 @@ var TagBox = function(el, opts){
         }
       }
     }else{
-      if(e.keyCode == 13// ||
-     //  e.keyCode == 32 ||
-     //    e.keyCode == 9  
+      if(theKeyCode == 13// ||
+     //  theKeyCode == 32 ||
+     //    theKeyCode == 9
      ){
         return false;
       }
