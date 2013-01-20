@@ -1,8 +1,14 @@
 ;(function($, window, undefined){
 
+/*
+ * fuzzyMatch String matching algorithm
+ * https://github.com/jbt/fuzzyMatch
+ *
+ * Author: James Taylor <jt@gosquared.com>
+ * License: MIT
+ */
 
-// INSERT LICENCE HERE
-var fuzzyRank = (function(){
+var fuzzyMatch = (function(){
   /**
    * ## escapeRegex
    *
@@ -209,7 +215,7 @@ var fuzzyRank = (function(){
    *
    * The `relevances` parameter should be an object containing properties
    * with the same names as those on `item` that should be counted. For
-   * example, a value of `{ propA: 2, propB: 1}` would count matches in
+   * example, a value of `{ propA: 2, propB: 1 }` would count matches in
    * `propA` twice as highly as matches in `propB`.
    *
    * The returned `highlights` property contains arrays of character indices
@@ -741,7 +747,7 @@ var TagBox = function(el, opts){
       for(var i = 0; i < items.length; i += 1){
         var theItem = {
           item: items[i],
-          score: fuzzyRank(items[i], term, relevance)
+          score: fuzzyMatch(items[i], term, relevance)
         };
         if(theItem.score > 0 && (opts['allowDuplicates'] || !alreadyHaveItem(theItem.item))){
           itemsToShow.push(theItem);

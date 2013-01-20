@@ -283,7 +283,7 @@ var TagBox = function(el, opts){
       for(var i = 0; i < items.length; i += 1){
         var theItem = {
           item: items[i],
-          score: fuzzyRank(items[i], term, relevance)
+          score: fuzzyMatch(items[i], term, relevance)
         };
         if(theItem.score > 0 && (opts['allowDuplicates'] || !alreadyHaveItem(theItem.item))){
           itemsToShow.push(theItem);
