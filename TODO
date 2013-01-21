@@ -4,6 +4,7 @@
  * Copy autocapitalize, spellcheck etc attributes
  * Demos/examples
  * Readme
+ * Allow different trigger characters
  * Passthrough of events?
  * Extra methods? Update/destroy/etc
  * AJAX loading
