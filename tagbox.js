@@ -831,6 +831,8 @@ $.fn['tagbox'] = function(opts){
   var options = $.extend({}, defaults, opts);
 
   return this.each(function(){
+    if($(this).data('tagbox')) return;
+
     var tb = new TagBox(this, options);
     $(this).data('tagbox', tb);
   });
