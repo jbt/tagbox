@@ -512,7 +512,6 @@ var TagBox = function(el, opts){
   var newInput = $('<input type="text" />')
     .attr({
       autocomplete: input.attr('autocomplete'),
-      required: input.attr('required'),
       spellcheck: input.attr('spellcheck'),
       autocapitalize: input.attr('autocapitalize')
     })
