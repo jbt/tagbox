@@ -1,7 +1,6 @@
 # TODO list
 
  * Honour required and placehodler attributes if possible
- * Copy autocapitalize, spellcheck etc attributes
  * Demos/examples
  * Readme
  * Allow different trigger characters

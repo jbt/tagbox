@@ -26,6 +26,12 @@ var TagBox = function(el, opts){
     .insertBefore(self.input);
 
   var newInput = $('<input type="text" />')
+    .attr({
+      autocomplete: input.attr('autocomplete'),
+      required: input.attr('required'),
+      spellcheck: input.attr('spellcheck'),
+      autocapitalize: input.attr('autocapitalize')
+    })
     .on('keyup keydown blur update change', resizeInputBox)
     .on('blur', function(){
       setTimeout(function(){
