@@ -5,6 +5,7 @@
  * Demos/examples
  * Readme
  * Allow different trigger characters
+ * Prompt text
  * Passthrough of events?
  * Extra methods? Update/destroy/etc
  * AJAX loading
@@ -12,3 +13,4 @@
  * Highlight terms
  * cross-browser testing
  * add width to tags + transitions, animations
+ * Use nicer closure compiler version

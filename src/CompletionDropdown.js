@@ -1,4 +1,4 @@
-var CompletionDropdown = function(completer, opts){
+var CompletionDropdown = function(tagbox, opts){
 
   var self = this;
 
@@ -71,7 +71,9 @@ var CompletionDropdown = function(completer, opts){
     }
   };
 
-  function selectRow(idx){
+  var scrollTimeout;
+
+  function selectRow(idx, scrollWithTimeout){
     if(selectedRow){
       selectedRow.deselect();
     }
@@ -82,7 +84,14 @@ var CompletionDropdown = function(completer, opts){
     if(idx >= 0){
       selectedRow = rows[idx];
       selectedRow.select();
-      scrollToRow(selectedRow.el);
+      clearTimeout(scrollTimeout);
+      if(scrollWithTimeout){
+        scrollTimeout = setTimeout(function(){
+          scrollToRow(selectedRow.el);
+        }, 80);
+      }else{
+        scrollToRow(selectedRow.el);
+      }
     }else{
       selectedRow = false;
       newRow && newRow.addClass('selected');
@@ -91,11 +100,11 @@ var CompletionDropdown = function(completer, opts){
   }
 
   function scrollToRow(r){
-    var o = r.offset().top - el.offset().top - el.scrollTop();
+    var o = r.offset().top - el.offset().top;
     if(o < 0){
-      el.scrollTop(r.offset().top - el.offset().top);
-    }else if(o > el.height() - r.height()){
-      el.scrollTop(o + el.scrollTop() - el.height() + r.height());
+      el.scrollTop(o + el.scrollTop());
+    }else if(o > el.innerHeight() - r.outerHeight()){
+      el.scrollTop(o + el.scrollTop() - el.innerHeight() + r.outerHeight());
     }
   }
 
@@ -112,15 +121,15 @@ var CompletionDropdown = function(completer, opts){
         var row = new DropdownRow(items[i], opts);
         row.el.appendTo(el.find('.list'));
         row.el.on('mouseover', function(row){ return function(){
-          self.selectRow(row);
+          selectRow(row, true);
         }; }(row));
         row.el.on('mousedown', function(){
-          completer.dontHide = true;
+          tagbox.dontHide = true;
         }).on('mouseup', function(){
-          completer.dontHide = false;
+          tagbox.dontHide = false;
         });
         row.el.on('click', function(item){ return function(){
-          completer.addToken(item);
+          tagbox.addToken(item);
         }; }(items[i]));
         rows.push(row);
       }

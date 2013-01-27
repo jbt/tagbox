@@ -10,17 +10,18 @@ var Token = function(item, opts){
 
   var format = opts['tokenFormat'];
 
+  self.value = (typeof item == 'string') ? item : item[opts['valueField']];
+  self.item = item;
+
+
   if(typeof format == 'string'){
+    if(typeof item == 'string') item = { value: item };
     el.children('span').html(format.replace(/\{\{([^}]*)\}\}/g, function(match, field){
       return item[field];
     }));
   }else{
     el.children('span').html(format(item));
   }
-
-  self.value = item[opts['valueField']];
-  self.item = item;
-
 
   self.remove = function(){
     el.data('token', null);

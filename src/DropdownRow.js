@@ -11,6 +11,7 @@ var DropdownRow = function(item, opts){
   var format = opts['rowFormat'];
 
   if(typeof format == 'string'){
+    if(typeof item == 'string') item = { value: item };
     el.html(format.replace(/\{\{([^}]*)\}\}/g, function(match, field){
       return item[field];
     }));
