@@ -654,7 +654,9 @@ var TagBox = function(el, opts){
     }
 
     // Don't allow typing if we've hit the maximum
-    if(self.tokens.length === opts['maxItems']){
+    if(self.tokens.length === opts['maxItems'] && !(
+        e.keyCode == 9
+      )){
       newInput.val('');
       return false;
     }
@@ -796,6 +798,7 @@ var TagBox = function(el, opts){
 
     dropdown.showItems(itemsToShow);
     dropdown.setEmptyItem(term);
+    dropdown.updatePosition(wrapper);
   }
 
   function resizeInputBox(force){
