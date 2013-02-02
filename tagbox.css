@@ -31,6 +31,8 @@
 		line-height: 30px;
 
 		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 
 		cursor: pointer;
 	}
@@ -46,7 +48,12 @@
 	cursor: default;
 }
 	.tagbox-token span {
-		display: inline-block;
+		display: block;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+
+		line-height: 18px;
 	}
 	.tagbox-token a {
 		position: absolute;
@@ -124,7 +131,7 @@
 		margin-right: 12px;
 	}
 	.tagbox-token span {
-		line-height: 15px;
+		line-height: 26px;
 	}
 	.tagbox-token a {
 		font-size: 13px;
@@ -162,9 +169,8 @@
 	}
 	.tagbox-item {
 		height: auto;
-		padding: 4px 0;
+		padding: 4px 20px;
 		width: 100%;
-		text-indent: 20px;
 
 		border-bottom: 1px solid rgba(74,85,99,.3);
 	}

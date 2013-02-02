@@ -3,6 +3,7 @@
  * Honour required and placehodler attributes if possible
  * Add focus class to wrapper
  * enter to submit
+ * hide empty newItem row with autoShow
  * Demos/examples
  * Readme
  * Allow different trigger characters

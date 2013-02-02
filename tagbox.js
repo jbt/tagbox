@@ -670,6 +670,7 @@ var TagBox = function(el, opts){
     var t = new Token(selectedItem, opts);
 
     t.el.insertBefore(newInput);
+    t.el.css('maxWidth', self.wrapper.width());
 
     self.tokens.push(t);
 
