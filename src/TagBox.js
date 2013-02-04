@@ -29,7 +29,8 @@ var TagBox = function(el, opts){
     .attr({
       autocomplete: input.attr('autocomplete'),
       spellcheck: input.attr('spellcheck'),
-      autocapitalize: input.attr('autocapitalize')
+      autocapitalize: input.attr('autocapitalize'),
+      placeholder: input.attr('placeholder')
     })
     .on('keyup keydown blur update change', resizeInputBox)
     .on('blur', function(){
