@@ -33,6 +33,12 @@ var TagBox = function(el, opts){
       placeholder: input.attr('placeholder')
     })
     .on('keyup keydown blur update change', resizeInputBox)
+    .on('keypress', function(e){
+      if(e.keyCode === 13 && newInput.val()){
+        e.preventDefault();
+        return false;
+      }
+    })
     .on('blur', function(){
       setTimeout(function(){
         if(!self.dontHide) dropdown.hide();
