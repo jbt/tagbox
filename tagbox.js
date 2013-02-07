@@ -307,7 +307,14 @@ var CompletionDropdown = function(tagbox, opts){
     .hide();
 
   if(opts['allowNew']){
-    var newRow = $('<div class="tagbox-item new-item" />').prependTo(el);
+    var newRow = $('<div class="tagbox-item new-item" />').prependTo(el)
+      .on('mousedown', function(){
+        tagbox.dontHide = true;
+      }).on('mouseup', function(){
+        tagbox.dontHide = false;
+      }).on('click', function(){
+        tagbox.addToken(opts['createNew'](self.newText));
+      });
   }
 
   self.updatePosition = function(input){
@@ -332,10 +339,12 @@ var CompletionDropdown = function(tagbox, opts){
 
   self.show = function(){
     el.show();
+    self.visible = true;
   };
 
   self.hide = function(){
     el.hide();
+    self.visible = false;
   };
 
   self.getSelected = function(){
@@ -344,7 +353,7 @@ var CompletionDropdown = function(tagbox, opts){
 
   self.selectNext = function(){
     if(selectedIndex === rows.length - 1){
-      if(opts['allowNew'] || rows.length === 0){
+      if((opts['allowNew'] && self.newText) || rows.length === 0){
         selectRow(-1);
       }else{
         selectRow(0);
@@ -356,7 +365,7 @@ var CompletionDropdown = function(tagbox, opts){
 
   self.selectPrevious = function(){
     if(selectedIndex === 0){
-      if(opts['allowNew']){
+      if(opts['allowNew'] && self.newText){
         selectRow(-1);
       }else{
         selectRow(rows.length - 1);
@@ -405,7 +414,13 @@ var CompletionDropdown = function(tagbox, opts){
   }
 
   self.setEmptyItem = function(txt){
-    el.find('.new-item').text(opts['newText'].replace(/\{\{txt\}\}/g, txt));
+    if(!newRow) return;
+    self.newText = txt;
+    if(!txt){
+      newRow.hide();
+    }else{
+      newRow.show().text(opts['newText'].replace(/\{\{txt\}\}/g, txt));
+    }
   };
 
   self.showItems = function(items){
@@ -509,12 +524,14 @@ var TagBox = function(el, opts){
     })
     .insertBefore(self.input);
 
+  var thePlaceholder = input.attr('placeholder');
+
   var newInput = $('<input type="text" />')
     .attr({
       autocomplete: input.attr('autocomplete'),
       spellcheck: input.attr('spellcheck'),
       autocapitalize: input.attr('autocapitalize'),
-      placeholder: input.attr('placeholder')
+      placeholder: thePlaceholder
     })
     .on('keyup keydown blur update change', resizeInputBox)
     .on('keypress', function(e){
@@ -526,10 +543,14 @@ var TagBox = function(el, opts){
     .on('blur', function(){
       setTimeout(function(){
         if(!self.dontHide) dropdown.hide();
+        wrapper.removeClass('focus');
       }, 50);
     })
-    .on('focus', updateDropdown)
     .on('keydown', handleKeyDown)
+    .on('focus', function(){
+      wrapper.addClass('focus');
+      updateDropdown();
+    })
     .appendTo(wrapper);
 
   var resizer = $('<span />')
@@ -626,7 +647,7 @@ var TagBox = function(el, opts){
       return false;
     }
 
-    if(newInput.val()){
+    if(dropdown.visible){
       if(theKeyCode === 38){
         dropdown.selectPrevious();
         return false;
@@ -684,6 +705,8 @@ var TagBox = function(el, opts){
     if(ready) newInput.val('');
     resizeInputBox(true);
     dropdown.hide();
+
+    newInput.focus();
 
     updateInput();
   }
@@ -773,6 +796,14 @@ var TagBox = function(el, opts){
     var term = newInput.val();
     var relevance = scoresObject();
 
+    if(self.tokens.length === opts['maxItems']){
+      dropdown.hide();
+      newInput.removeAttr('placeholder');
+      return;
+    }else{
+      newInput.attr('placeholder', thePlaceholder)
+    }
+
     if(term === '' && !opts['autoShow']){
       dropdown.hide();
       return;
@@ -841,12 +872,12 @@ $.fn['tagbox'] = function(opts){
   var defaults = {
     'maxHeight': 200,
     'maxListItems': 20,
-    'rowFormat': '{{name}}',
-    'tokenFormat': '{{name}}',
-    'valueField': 'name',
+    'rowFormat': '{{value}}',
+    'tokenFormat': '{{value}}',
+    'valueField': 'value',
     'delimiter': ',',
     'allowDuplicates': false,
-    'createNew': function(txt){ return { name: txt }; },
+    'createNew': function(txt){ return { value: txt }; },
     'allowNew': false,
     'newText': '{{txt}}',
     'emptyText': 'Not Found',

@@ -11,7 +11,14 @@ var CompletionDropdown = function(tagbox, opts){
     .hide();
 
   if(opts['allowNew']){
-    var newRow = $('<div class="tagbox-item new-item" />').prependTo(el);
+    var newRow = $('<div class="tagbox-item new-item" />').prependTo(el)
+      .on('mousedown', function(){
+        tagbox.dontHide = true;
+      }).on('mouseup', function(){
+        tagbox.dontHide = false;
+      }).on('click', function(){
+        tagbox.addToken(opts['createNew'](self.newText));
+      });
   }
 
   self.updatePosition = function(input){
@@ -36,10 +43,12 @@ var CompletionDropdown = function(tagbox, opts){
 
   self.show = function(){
     el.show();
+    self.visible = true;
   };
 
   self.hide = function(){
     el.hide();
+    self.visible = false;
   };
 
   self.getSelected = function(){
@@ -48,7 +57,7 @@ var CompletionDropdown = function(tagbox, opts){
 
   self.selectNext = function(){
     if(selectedIndex === rows.length - 1){
-      if(opts['allowNew'] || rows.length === 0){
+      if((opts['allowNew'] && self.newText) || rows.length === 0){
         selectRow(-1);
       }else{
         selectRow(0);
@@ -60,7 +69,7 @@ var CompletionDropdown = function(tagbox, opts){
 
   self.selectPrevious = function(){
     if(selectedIndex === 0){
-      if(opts['allowNew']){
+      if(opts['allowNew'] && self.newText){
         selectRow(-1);
       }else{
         selectRow(rows.length - 1);
@@ -109,7 +118,13 @@ var CompletionDropdown = function(tagbox, opts){
   }
 
   self.setEmptyItem = function(txt){
-    el.find('.new-item').text(opts['newText'].replace(/\{\{txt\}\}/g, txt));
+    if(!newRow) return;
+    self.newText = txt;
+    if(!txt){
+      newRow.hide();
+    }else{
+      newRow.show().text(opts['newText'].replace(/\{\{txt\}\}/g, txt));
+    }
   };
 
   self.showItems = function(items){

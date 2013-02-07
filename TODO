@@ -1,9 +1,6 @@
 # TODO list
 
- * Honour required and placehodler attributes if possible
- * Add focus class to wrapper
- * enter to submit
- * hide empty newItem row with autoShow
+ * Honour required attribute if possible
  * Demos/examples
  * Readme
  * Allow different trigger characters
@@ -13,6 +10,7 @@
  * AJAX loading
  * esc to cancel
  * Highlight terms
+ * Option of substring vs fuzzy matching
  * cross-browser testing
  * add width to tags + transitions, animations
  * Use nicer closure compiler version

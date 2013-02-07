@@ -8,6 +8,17 @@
 
 	cursor: text;
 }
+
+.tagbox-wrapper.focus {
+	outline: none;
+
+	background: #f5faff;
+	color: #445d77;
+
+	border-color: #96b5d1;
+	box-shadow: inset 0 1px 1px #e2edf7, 0 0 4px rgba(75,125,170,.3);
+}
+
 .tagbox-wrapper input { /* The textfield, needs to stay "invisible" */
 	outline: none;
 	border: none;
