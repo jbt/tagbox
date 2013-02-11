@@ -107,6 +107,12 @@ var TagBox = function(el, opts){
 
     var theKeyCode = e.keyCode;
 
+    var dontPreventDefault = false;
+
+    // TODO make this a little less simplistic and try explicitly
+    // checking whether a visible character has been typed
+    if(e.ctrlKey || e.metaKey) dontPreventDefault = true;
+
     if(theKeyCode === 37){
       if(selectedToken){
         if(selectedToken === self.tokens[0]){
@@ -114,7 +120,7 @@ var TagBox = function(el, opts){
         }else{
           selectToken(self.tokens[self.tokens.indexOf(selectedToken) - 1]);
         }
-        return false;
+        return !dontPreventDefault;
       }
       if(cursorFarLeft && self.tokens.length){
         selectToken(self.tokens[self.tokens.length - 1]);
@@ -128,7 +134,7 @@ var TagBox = function(el, opts){
         }else{
           selectToken(self.tokens[self.tokens.indexOf(selectedToken) + 1]);
         }
-        return false;
+        return !dontPreventDefault;
       }
       if(cursorFarRight && self.tokens.length){
         selectToken(self.tokens[0]);
@@ -140,22 +146,22 @@ var TagBox = function(el, opts){
        theKeyCode === 8 )   // backspace
     ){
       removeToken(selectedToken, theKeyCode === 8 ? -1 : 1);
-      return false;
+      return !dontPreventDefault;
     }
 
     if(theKeyCode === 8 && cursorFarLeft && self.tokens.length){
       selectToken(self.tokens[self.tokens.length - 1]);
-      return false;
+      return !dontPreventDefault;
     }
 
     if(dropdown.visible){
       if(theKeyCode === 38){
         dropdown.selectPrevious();
-        return false;
+        return !dontPreventDefault;
       }
       if(theKeyCode === 40){
         dropdown.selectNext();
-        return false;
+        return !dontPreventDefault;
       }
 
       if((theKeyCode == 39 &&
@@ -167,10 +173,10 @@ var TagBox = function(el, opts){
 
         if(selection){
           addToken(selection);
-          return false;
+          return !dontPreventDefault;
         }else if(opts['allowNew']){
           addToken(opts['createNew'](newInput.val()));
-          return false;
+          return !dontPreventDefault;
         }
       }
     }else{
@@ -178,7 +184,7 @@ var TagBox = function(el, opts){
      //  theKeyCode == 32 ||
      //    theKeyCode == 9
      ){
-        return false;
+        return !dontPreventDefault;
       }
     }
 
@@ -187,7 +193,7 @@ var TagBox = function(el, opts){
         e.keyCode == 9
       )){
       newInput.val('');
-      return false;
+      return !dontPreventDefault;
     }
 
     //if(String.fromCharCode(e.which)){

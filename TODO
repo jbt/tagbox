@@ -1,5 +1,8 @@
 # TODO list
 
+ * Don't intercept keystrokes with ctrl/alt/meta
+ * Make it clearer when you're at the tag limit
+ * viewport boundary checking
  * Honour required attribute if possible
  * Demos/examples
  * Readme
