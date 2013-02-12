@@ -524,6 +524,12 @@ var TagBox = function(el, opts){
     })
     .insertBefore(self.input);
 
+  input.on('invalid', function(e){
+    e.preventDefault();
+
+    self.wrapper.addClass('invalid');
+  });
+
   var thePlaceholder = input.attr('placeholder');
 
   var newInput = $('<input type="text" />')
@@ -801,6 +807,8 @@ var TagBox = function(el, opts){
     var itemsToShow = [];
     var term = newInput.val();
     var relevance = scoresObject();
+
+    self.wrapper.removeClass('invalid');
 
     if(self.tokens.length === opts['maxItems']){
       dropdown.hide();
