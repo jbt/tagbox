@@ -684,7 +684,7 @@ var TagBox = function(el, opts){
           return dontPreventDefault;
         }
       }
-    }else{
+    }else if(newInput.val()){
       if(theKeyCode == 13// ||
      //  theKeyCode == 32 ||
      //    theKeyCode == 9
