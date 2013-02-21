@@ -207,11 +207,12 @@ var TagBox = function(el, opts){
   }
 
   function addCurrent(){
+    if(!dropdown.visible) return;
     var selection = dropdown.getSelected();
 
     if(selection){
       addToken(selection);
-    }else if(opts['allowNew']){
+    }else if(opts['allowNew'] && newInput.val()){
       addToken(opts['createNew'](newInput.val()));
     }
   }
