@@ -48,6 +48,7 @@ var TagBox = function(el, opts){
       }
     })
     .on('blur', function(){
+      addCurrent();
       setTimeout(function(){
         if(!self.dontHide) dropdown.hide();
         wrapper.removeClass('focus');
@@ -104,6 +105,10 @@ var TagBox = function(el, opts){
   $(window).on('resize', function(){
     resizeInputBox(true);
   });
+
+  setTimeout(function(){
+    resizeInputBox(true);
+  }, 500);
 
 
   function handleKeyDown(e){
@@ -175,15 +180,9 @@ var TagBox = function(el, opts){
           theKeyCode == 13 || // enter
     //    theKeyCode == 32 || // space
           theKeyCode == 9  ){ // tab
-        var selection = dropdown.getSelected();
 
-        if(selection){
-          addToken(selection);
-          return dontPreventDefault;
-        }else if(opts['allowNew']){
-          addToken(opts['createNew'](newInput.val()));
-          return dontPreventDefault;
-        }
+        addCurrent();
+        return dontPreventDefault;
       }
     }else if(newInput.val()){
       if(theKeyCode == 13// ||
@@ -205,6 +204,16 @@ var TagBox = function(el, opts){
     //if(String.fromCharCode(e.which)){
       setTimeout(updateDropdown, 10);
     //}
+  }
+
+  function addCurrent(){
+    var selection = dropdown.getSelected();
+
+    if(selection){
+      addToken(selection);
+    }else if(opts['allowNew']){
+      addToken(opts['createNew'](newInput.val()));
+    }
   }
 
   function addToken(selectedItem){
