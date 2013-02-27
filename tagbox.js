@@ -524,6 +524,8 @@ var TagBox = function(el, opts){
     })
     .insertBefore(self.input);
 
+  if(opts['className']) wrapper.addClass(opts['className']);
+
   input.on('invalid', function(e){
     e.preventDefault();
 
@@ -866,6 +868,8 @@ var TagBox = function(el, opts){
 
   function resizeInputBox(force){
     if(self.currentInput == newInput.val() && (force !== true)) return;
+
+    self.wrapper.toggleClass('full', self.tokens.length === opts['maxItems']);
 
     deselectCurrentToken();
 

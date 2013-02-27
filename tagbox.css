@@ -197,3 +197,21 @@
 		.tagbox-item:last-of-type {
 			border-bottom: none;
 		}
+
+.tagbox-wrapper.single .tagbox-token {
+	max-width: 100% !important;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	box-shadow: none;
+	margin: 0;
+	height: auto;
+}
+
+	.tagbox-wrapper.single .tagbox-token span,
+	.tagbox-wrapper.single .tagbox-token a {
+		line-height: 38px;
+		font-size: 13px;
+	}
