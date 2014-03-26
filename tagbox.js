@@ -300,7 +300,7 @@ var CompletionDropdown = function(tagbox, opts){
 
   var selectedRow, selectedIndex, rows;
 
-  var el = self.el = $('<div class="tagbox-dropdown"><div class="list"></div></div>')
+  var el = self.el = $('<div class="tagbox-dropdown"><div class="tagbox-list"></div></div>')
     .css({
       maxHeight: opts['maxHeight']
     })
@@ -424,13 +424,13 @@ var CompletionDropdown = function(tagbox, opts){
   };
 
   self.showItems = function(items){
-    el.find('.list').empty();
+    el.find('.tagbox-list').empty();
     rows = [];
 
     if(items.length > 0){
       for(var i = 0; i < Math.min(items.length, opts['maxListItems']); i += 1){
         var row = new DropdownRow(items[i], opts);
-        row.el.appendTo(el.find('.list'));
+        row.el.appendTo(el.find('.tagbox-list'));
         row.el.on('mouseover', function(row){ return function(){
           selectRow(row, true);
         }; }(row));
@@ -448,7 +448,7 @@ var CompletionDropdown = function(tagbox, opts){
     }else if(!opts['allowNew']){
       $('<div class="tagbox-item empty"/>')
         .text(opts['emptyText'])
-        .appendTo(el.find('.list'));
+        .appendTo(el.find('.tagbox-list'));
       selectRow(-1);
     }else{
       selectRow(-1);
@@ -503,6 +503,12 @@ var TagBox = function(el, opts){
 
   self.tokens = [];
 
+  var dontFocus = true;
+
+  if(document.activeElement === el){
+    dontFocus = false;
+  }
+
   var input = self.input = $(el)
     .hide();
   self.options = opts;
@@ -549,15 +555,17 @@ var TagBox = function(el, opts){
       }
     })
     .on('blur', function(){
-      addCurrent();
+      // addCurrent();
       setTimeout(function(){
         if(!self.dontHide) dropdown.hide();
         wrapper.removeClass('focus');
       }, 50);
+      input.triggerHandler('blur');
     })
     .on('keydown', handleKeyDown)
     .on('focus', function(){
       wrapper.addClass('focus');
+      input.triggerHandler('focus');
       updateDropdown();
     })
     .appendTo(wrapper);
@@ -730,7 +738,7 @@ var TagBox = function(el, opts){
     resizeInputBox(true);
     dropdown.hide();
 
-    newInput.focus();
+    if(!dontFocus) newInput.focus();
 
     updateInput();
   }
@@ -768,6 +776,7 @@ var TagBox = function(el, opts){
     }
 
     input.val(values.join(opts['delimiter']));
+    input.trigger('change');
   }
 
   var selectedToken;
@@ -894,6 +903,8 @@ var TagBox = function(el, opts){
     dropdown.updatePosition(wrapper);
   }
 
+  dontFocus = false;
+
 };
 $.fn['tagbox'] = function(opts){
 
@@ -903,6 +914,7 @@ $.fn['tagbox'] = function(opts){
     'rowFormat': '{{value}}',
     'tokenFormat': '{{value}}',
     'valueField': 'value',
+    'searchIn': ['value'],
     'delimiter': ',',
     'allowDuplicates': false,
     'createNew': function(txt){ return { value: txt }; },

@@ -6,6 +6,7 @@ $.fn['tagbox'] = function(opts){
     'rowFormat': '{{value}}',
     'tokenFormat': '{{value}}',
     'valueField': 'value',
+    'searchIn': ['value'],
     'delimiter': ',',
     'allowDuplicates': false,
     'createNew': function(txt){ return { value: txt }; },

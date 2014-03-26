@@ -4,7 +4,7 @@ var CompletionDropdown = function(tagbox, opts){
 
   var selectedRow, selectedIndex, rows;
 
-  var el = self.el = $('<div class="tagbox-dropdown"><div class="list"></div></div>')
+  var el = self.el = $('<div class="tagbox-dropdown"><div class="tagbox-list"></div></div>')
     .css({
       maxHeight: opts['maxHeight']
     })
@@ -128,13 +128,13 @@ var CompletionDropdown = function(tagbox, opts){
   };
 
   self.showItems = function(items){
-    el.find('.list').empty();
+    el.find('.tagbox-list').empty();
     rows = [];
 
     if(items.length > 0){
       for(var i = 0; i < Math.min(items.length, opts['maxListItems']); i += 1){
         var row = new DropdownRow(items[i], opts);
-        row.el.appendTo(el.find('.list'));
+        row.el.appendTo(el.find('.tagbox-list'));
         row.el.on('mouseover', function(row){ return function(){
           selectRow(row, true);
         }; }(row));
@@ -152,7 +152,7 @@ var CompletionDropdown = function(tagbox, opts){
     }else if(!opts['allowNew']){
       $('<div class="tagbox-item empty"/>')
         .text(opts['emptyText'])
-        .appendTo(el.find('.list'));
+        .appendTo(el.find('.tagbox-list'));
       selectRow(-1);
     }else{
       selectRow(-1);

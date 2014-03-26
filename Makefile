@@ -26,7 +26,7 @@ tagbox.js: \
 
 
 lib/compiler.jar:
-	wget -O- http://closure-compiler.googlecode.com/files/compiler-20120430.tar.gz | tar -xz -C lib compiler.jar
+	wget -O- http://dl.google.com/closure-compiler/compiler-latest.tar.gz | tar -xz -C lib compiler.jar
 
 lib/jquery-1.8-extern.js:
 	wget -O $@ http://closure-compiler.googlecode.com/svn/trunk/contrib/externs/jquery-1.8.js
