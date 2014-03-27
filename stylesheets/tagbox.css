@@ -1,14 +1,21 @@
-/**
- *   The bare minimum styling required for Tagbox to work.
- */
 .tagbox-wrapper {
-  /* The main wrapper element. */
   display: inline-block;
   width: 400px;
   position: relative;
   cursor: text;
+  vertical-align: middle;
+  border: 1px solid #b3bbc2;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(179, 187, 194, 0.4);
+  box-shadow: inset 0 1px 1px rgba(179, 187, 194, 0.4);
+  -webkit-transition: height 0.2s, border-radius 0.2s;
+  transition: height 0.2s, border-radius 0.2s;
+  padding: 0 4px;
+  background: white;
+  min-height: 23px;
+  font: 13px/21px "Helvetica Neue", sans-serif;
+  color: #656e7b;
 }
-
 .tagbox-wrapper.focus {
   outline: none;
   background: #f5faff;
@@ -17,100 +24,77 @@
   -webkit-box-shadow: inset 0 1px 1px #e2edf7, 0 0 4px rgba(75, 125, 170, 0.3);
   box-shadow: inset 0 1px 1px #e2edf7, 0 0 4px rgba(75, 125, 170, 0.3);
 }
-
 .tagbox-wrapper input {
-  /* The textfield, needs to stay "invisible" */
+  font: 13px/21px "Helvetica Neue", sans-serif;
+  color: #656e7b;
   outline: none;
   border: none;
   background: transparent;
-  margin: 6px 12px;
+  margin: 1px 0;
+  line-height: 19px;
+  vertical-align: top;
 }
-
+.tagbox-wrapper.full input {
+  display: none;
+}
 .tagbox-dropdown {
-  /* The dropdown list */
+  font: 13px/21px "Helvetica Neue", sans-serif;
+  color: #656e7b;
   position: absolute;
   top: 100%;
   left: -1px;
   right: -1px;
   z-index: 1000000;
   overflow: auto;
+  background-color: #f0f3f5;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#f8f9fb), to(#e8edf0));
+  background-image: -webkit-linear-gradient(top, #f8f9fb, #e8edf0);
+  background-image: linear-gradient(top, #f8f9fb, #e8edf0);
+  margin-top: 5px;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.4), inset 0 0 0 1px rgba(74, 85, 99, 0.4), inset 0 -1px 1px rgba(0, 0, 0, 0.1), 0 1px 1px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.4), inset 0 0 0 1px rgba(74, 85, 99, 0.4), inset 0 -1px 1px rgba(0, 0, 0, 0.1), 0 1px 1px rgba(0, 0, 0, 0.05);
 }
-
+.tagbox-dropdown .empty {
+  color: #87919c;
+  text-align: center;
+  text-indent: 0;
+}
 .tagbox-item {
-  /* A result from the dropdown */
   position: relative;
-  height: 30px;
   line-height: 30px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   cursor: pointer;
+  height: auto;
+  padding: 1px 10px;
+  border-bottom: 1px solid rgba(74, 85, 99, 0.3);
 }
-
 .tagbox-item.empty {
   cursor: default;
 }
-
+.tagbox-item:not(.empty).selected {
+  background: rgba(255, 255, 255, 0.6);
+}
+.tagbox-item:not(.empty):hover,
+.tagbox-item:not(.empty).selected:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+.tagbox-item:not(.empty):active {
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+.tagbox-item:last-of-type {
+  border-bottom: none;
+}
 .tagbox-token {
-  /* The tag itself */
   display: inline-block;
   position: relative;
-  height: 18px;
   cursor: default;
-}
-
-.tagbox-token span {
-  display: block;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  line-height: 18px;
-}
-
-.tagbox-token a {
-  position: absolute;
-  right: 0;
-  top: 0;
-  height: 100%;
-  width: 16px;
-  cursor: pointer;
-}
-
-/**
- *   Additional styling
- *   Default - GoSquared theme.
- */
-.tagbox-wrapper {
-  vertical-align: middle;
-  border: 1px solid #b3bbc2;
-  border-radius: 4px;
-  -webkit-box-shadow: inset 0 1px 1px rgba(179, 187, 194, 0.4);
-  box-shadow: inset 0 1px 1px rgba(179, 187, 194, 0.4);
-  -webkit-transition: height .2s, border-radius .2s;
-  transition: height .2s, border-radius .2s;
-  padding: 0 16px;
-}
-
-.tagbox-wrapper.typing {
-  border-radius: 4px 4px 0 0;
-}
-
-.tagbox-wrapper, .tagbox-wrapper input, .tagbox-dropdown {
-  font: 13px/21px "Helvetica Neue", sans-serif;
-  color: #656e7b;
-}
-
-.tagbox-wrapper input {
-  margin: 8px 0;
-  line-height: 22px;
-  vertical-align: top;
-}
-
-.tagbox-token {
-  display: inline-block;
-  height: 26px;
-  padding: 0 22px 0 12px;
-  margin: 6px 18px 6px -10px;
+  height: 21px;
+  padding: 0 18px 0 6px;
+  margin: 1px 4px 1px -3px;
   overflow: hidden;
   background-color: #dde9f5;
   background-image: -webkit-gradient(linear, left top, left bottom, from(#e9f1f8), to(#d1e2f2));
@@ -128,97 +112,34 @@
   -webkit-transition: opacity .2s, width .2s;
   transition: opacity .2s, width .2s;
 }
-
 .tagbox-token.selected {
   -webkit-box-shadow: inset 0 2px 1px rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(44, 81, 121, 0.4), inset 0 0 0 2px rgba(255, 255, 255, 0.1);
   box-shadow: inset 0 2px 1px rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(44, 81, 121, 0.4), inset 0 0 0 2px rgba(255, 255, 255, 0.1);
 }
-
 .tagbox-token span {
-  line-height: 26px;
+  display: block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  line-height: 21px;
 }
-
 .tagbox-token a {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 14px;
+  cursor: pointer;
   font-size: 13px;
-  line-height: 24px;
+  line-height: 21px;
   color: #a2b6cc;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
   -webkit-transition: color .2s;
   transition: color .2s;
 }
-
 .tagbox-token a:hover {
   color: #56738f;
 }
-
-.tagbox-dropdown {
-  background-color: #f0f3f5;
-  background-image: -webkit-gradient(linear, left top, left bottom, from(#f8f9fb), to(#e8edf0));
-  background-image: -webkit-linear-gradient(top, #f8f9fb, #e8edf0);
-  background-image: linear-gradient(top, #f8f9fb, #e8edf0);
-  margin-top: 5px;
-  border-radius: 4px;
-  -webkit-box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.4), inset 0 0 0 1px rgba(74, 85, 99, 0.4), inset 0 -1px 1px rgba(0, 0, 0, 0.1), 0 1px 1px rgba(0, 0, 0, 0.05);
-  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.4), inset 0 0 0 1px rgba(74, 85, 99, 0.4), inset 0 -1px 1px rgba(0, 0, 0, 0.1), 0 1px 1px rgba(0, 0, 0, 0.05);
-}
-
-.tagbox-dropdown .empty {
-  color: #87919c;
-  text-align: center;
-  text-indent: 0;
-}
-
-.tagbox-item {
-  height: auto;
-  padding: 4px 20px;
-  border-bottom: 1px solid rgba(74, 85, 99, 0.3);
-}
-
-.tagbox-item:not(.empty).selected {
-  background: rgba(255, 255, 255, 0.6);
-}
-
-.tagbox-item:not(.empty):hover, .tagbox-item:not(.empty).selected:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.tagbox-item:not(.empty):active {
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1);
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1);
-}
-
-.tagbox-item:last-of-type {
-  border-bottom: none;
-}
-
-.tagbox-wrapper {
-  padding: 0 4px;
-  background: white;
-  min-height: 23px;
-}
-.tagbox-wrapper input {
-  margin: 1px 0;
-  line-height: 19px;
-}
-.tagbox-wrapper .tagbox-token {
-  height: 21px;
-  padding: 0 18px 0 6px;
-  margin: 1px 4px 1px -3px;
-}
-.tagbox-wrapper .tagbox-token span, .tagbox-wrapper .tagbox-token a {
-  line-height: 21px;
-}
-.tagbox-wrapper .tagbox-token a {
-  width: 14px;
-}
-.tagbox-wrapper.full input {
-  display: none;
-}
-
-.tagbox-item {
-  padding: 1px 10px;
-}
-
 .tagbox-wrapper.single .tagbox-token {
   max-width: 100%;
   position: absolute;
