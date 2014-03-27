@@ -1,3 +1,5 @@
-# tagBox
+# Tagbox
 
-Here is a short readme. I shall write a useful one soon.
+**Select items from lists with autocomplete**
+
+See [the project page](//jbt.github.io/tagbox) for examples.

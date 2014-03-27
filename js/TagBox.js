@@ -392,9 +392,9 @@ var TagBox = function(el, opts){
 
     newInput.width(
       Math.min(
-        self.wrapper.width() - 16,
+        self.wrapper.width() - 5,
         Math.max(
-          self.wrapper.width() - newInput.offset().left + self.wrapper.offset().left + 16,
+          self.wrapper.width() - newInput.offset().left + self.wrapper.offset().left + 5,
           resizer.width(),
           1
         )
