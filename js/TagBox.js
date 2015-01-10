@@ -14,7 +14,7 @@ var TagBox = function(el, opts){
     .hide();
   self.options = opts;
 
-  var wrapper = self.wrapper = $('<div class="tagbox-wrapper" />')
+  var wrapper = self.wrapper = $('<div class="tagbox-wrapper empty" />')
     .click(function(e){
       var target = $(e.target).closest('input, .tagbox-token, .tagbox-wrapper');
 
@@ -60,7 +60,7 @@ var TagBox = function(el, opts){
       setTimeout(function(){
         if(!self.dontHide) dropdown.hide();
         wrapper.removeClass('focus');
-      }, 50);
+      }, 20);
       input.triggerHandler('blur');
     })
     .on('keydown', handleKeyDown)
@@ -70,6 +70,12 @@ var TagBox = function(el, opts){
       updateDropdown();
     })
     .appendTo(wrapper);
+
+  self['focus'] = _focus;
+
+  function _focus(){
+    newInput.focus();
+  }
 
   var resizer = $('<span />')
     .appendTo(wrapper)
@@ -90,8 +96,10 @@ var TagBox = function(el, opts){
 
   dropdown.el.appendTo(opts['dropdownContainer']);
 
+  self['items'] = opts['items'];
+
   if(input.val()){
-    var items = opts['items'];
+    var items = self['items'];
     var bits = input.val().split(opts['delimiter']);
     var found;
     for(var i = 0; i < bits.length; i += 1){
@@ -111,13 +119,16 @@ var TagBox = function(el, opts){
 
   var ready = true;
 
+  var id = Math.random().toString().slice(2);
+
   resizeInputBox(true);
-  $(window).on('resize', function(){
+  $(window).on('resize.' + id, function(){
     resizeInputBox(true);
   });
 
   setTimeout(function(){
     resizeInputBox(true);
+    if(!dropdown.el.parent().length) dropdown.el.appendTo(opts['dropdownContainer']);
   }, 500);
 
 
@@ -234,6 +245,7 @@ var TagBox = function(el, opts){
     t.el.css('maxWidth', self.wrapper.width());
 
     self.tokens.push(t);
+    wrapper.removeClass('empty');
 
     if(ready) newInput.val('');
     resizeInputBox(true);
@@ -252,6 +264,8 @@ var TagBox = function(el, opts){
     var idx = self.tokens.indexOf(token);
 
     self.tokens.splice(idx, 1);
+
+    if(self.tokens.length === 0) wrapper.addClass('empty');
 
     if(token === selectedToken) selectedToken = undefined;
 
@@ -324,20 +338,27 @@ var TagBox = function(el, opts){
     return false;
   }
 
+  var ddto;
+
   function updateDropdown(){
-    var items = opts['items'];
+    clearTimeout(ddto);
+    ddto = setTimeout(reallyUpdateDropdown, 20);
+  }
+
+  function reallyUpdateDropdown(){
+    var items = self['items'];
     var itemsToShow = [];
     var term = newInput.val();
     var relevance = scoresObject();
 
-    self.wrapper.removeClass('invalid');
+    wrapper.removeClass('invalid');
 
     if(self.tokens.length === opts['maxItems']){
       dropdown.hide();
       newInput.removeAttr('placeholder');
       return;
     }else{
-      newInput.attr('placeholder', thePlaceholder)
+      newInput.attr('placeholder', thePlaceholder);
     }
 
     if(term === '' && !opts['autoShow']){
@@ -377,9 +398,9 @@ var TagBox = function(el, opts){
   }
 
   function resizeInputBox(force){
-    if(self.currentInput == newInput.val() && (force !== true)) return;
+    if(destroyed || (self.currentInput == newInput.val() && (force !== true))) return;
 
-    self.wrapper.toggleClass('full', self.tokens.length === opts['maxItems']);
+    wrapper.toggleClass('full', self.tokens.length === opts['maxItems']);
 
     deselectCurrentToken();
 
@@ -392,9 +413,9 @@ var TagBox = function(el, opts){
 
     newInput.width(
       Math.min(
-        self.wrapper.width() - 5,
+        wrapper.width() - 5,
         Math.max(
-          self.wrapper.width() - newInput.offset().left + self.wrapper.offset().left + 5,
+          wrapper.width() - newInput.offset().left + wrapper.offset().left + 5,
           resizer.width(),
           1
         )
@@ -405,5 +426,22 @@ var TagBox = function(el, opts){
   }
 
   dontFocus = false;
+
+  var destroyed;
+
+  function destroy(){
+    if(destroyed) return;
+    destroyed = true;
+
+    if(self.wrapper.parent()) self.wrapper.remove();
+    if(self.input.parent()) self.input.remove();
+    dropdown.remove();
+    $(window).unbind('resize.' + id);
+
+    input = wrapper = dropdown = self.input = self.wrapper = self.dropdown = null;
+  }
+
+  input.on(removeEventName, destroy);
+  wrapper.on(removeEventName, destroy);
 
 };

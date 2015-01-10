@@ -8,6 +8,20 @@ var CompletionDropdown = function(tagbox, opts){
     .css({
       maxHeight: opts['maxHeight']
     })
+    .on('mousedown', function(){
+      tagbox.dontHide = true;
+    }).on('mouseup', function(){
+      tagbox.dontHide = false;
+    }).on('mousemove', function(e){
+      var r = $(e.target).closest('.tagbox-item');
+      if(!r.length) return;
+      selectRow(r[0]);
+    }).on('click', '.tagbox-item:not(.new-item)', function(e){
+      var r = $(e.target).closest('.tagbox-item');
+      if(!r.length) return;
+      var item = r[0].__item;
+      tagbox.addToken(item);
+    })
     .hide();
 
   if(opts['allowNew']){
@@ -21,7 +35,13 @@ var CompletionDropdown = function(tagbox, opts){
       });
   }
 
+  self.remove = function(){
+    self.el.remove();
+  };
+
   self.updatePosition = function(input){
+    if(!el.parent().length) return;
+
     var o1 = el.offset();
     var o2 = input.offset();
     var o3 = el.parent().offset();
@@ -52,7 +72,7 @@ var CompletionDropdown = function(tagbox, opts){
   };
 
   self.getSelected = function(){
-    if(selectedRow) return selectedRow.item;
+    if(selectedRow) return selectedRow.__item;
   };
 
   self.selectNext = function(){
@@ -84,7 +104,7 @@ var CompletionDropdown = function(tagbox, opts){
 
   function selectRow(idx, scrollWithTimeout){
     if(selectedRow){
-      selectedRow.deselect();
+      $(selectedRow).removeClass('selected');
     }
     newRow && newRow.removeClass('selected');
     if(typeof idx !== 'number'){
@@ -92,14 +112,14 @@ var CompletionDropdown = function(tagbox, opts){
     }
     if(idx >= 0){
       selectedRow = rows[idx];
-      selectedRow.select();
+      $(selectedRow).addClass('selected');
       clearTimeout(scrollTimeout);
       if(scrollWithTimeout){
         scrollTimeout = setTimeout(function(){
-          scrollToRow(selectedRow.el);
+          scrollToRow(selectedRow);
         }, 80);
       }else{
-        scrollToRow(selectedRow.el);
+        scrollToRow(selectedRow);
       }
     }else{
       selectedRow = false;
@@ -108,7 +128,16 @@ var CompletionDropdown = function(tagbox, opts){
     selectedIndex = idx;
   }
 
+  var srto, sr;
+
   function scrollToRow(r){
+    clearTimeout(srto);
+    sr = r;
+    srto = setTimeout(reallyScrollToRow, 10);
+  }
+
+  function reallyScrollToRow(){
+    var r = $(sr);
     var o = r.offset().top - el.offset().top;
     if(o < 0){
       el.scrollTop(o + el.scrollTop());
@@ -131,23 +160,28 @@ var CompletionDropdown = function(tagbox, opts){
     el.find('.tagbox-list').empty();
     rows = [];
 
+    var tl = el.find('.tagbox-list')[0];
+
     if(items.length > 0){
-      for(var i = 0; i < Math.min(items.length, opts['maxListItems']); i += 1){
-        var row = new DropdownRow(items[i], opts);
-        row.el.appendTo(el.find('.tagbox-list'));
-        row.el.on('mouseover', function(row){ return function(){
-          selectRow(row, true);
-        }; }(row));
-        row.el.on('mousedown', function(){
-          tagbox.dontHide = true;
-        }).on('mouseup', function(){
-          tagbox.dontHide = false;
-        });
-        row.el.on('click', function(item){ return function(){
-          tagbox.addToken(item);
-        }; }(items[i]));
+      function add(i){
+        var row = DropdownRow(items[i], opts);
+        tl.appendChild(row);
+        // row.el.appendTo(el.find('.tagbox-list'));
+        // row.__i = i;
+        // row.el.on('mouseover', function(row){ return function(){
+        //   selectRow(row, true);
+        // }; }(row));
         rows.push(row);
       }
+
+      for(var i = 0; i < Math.min(50, items.length, opts['maxListItems']);) add(i++);
+
+      if(i === 50){
+        setTimeout(function(){
+          for(;i < Math.min(items.length, opts['maxListItems']);) add(i++);
+        }, 20);
+      }
+
       selectRow(0);
     }else if(!opts['allowNew']){
       $('<div class="tagbox-item empty"/>')

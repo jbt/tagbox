@@ -1,7 +1,7 @@
 NPM_BIN = node_modules/.bin
 LESS_CMD = $(NPM_BIN)/lessc
 MINIFY_CSS = $(NPM_BIN)/cleancss
-AUTOPREFIX = $(NPM_BIN)/autoprefixer
+AUTOPREFIX = $(NPM_BIN)/autoprefixer -o -
 
 all: clean build
 
@@ -25,6 +25,7 @@ node_modules:
 tagbox.js: \
 	js/_begin.js \
 	js/fuzzyMatch.js \
+	js/removeEvent.js \
 	js/DropdownRow.js \
 	js/CompletionDropdown.js \
 	js/Token.js \

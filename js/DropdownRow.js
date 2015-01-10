@@ -1,30 +1,33 @@
 var DropdownRow = function(item, opts){
 
-  var self = this;
+  // var self = this;
 
-  var el = self.el = $('<div class="tagbox-item" />');
-
-  if(opts['itemClass']) el.addClass(opts['itemClass']);
-
-  self.item = item;
+  var e = document.createElement('div');
+  e.className = 'tagbox-item' + (opts['itemClass'] ? ' ' + opts['itemClass'] : '')
+  e.__item = item;
+  // self.item = item;
 
   var format = opts['rowFormat'];
 
   if(typeof format == 'string'){
     if(typeof item == 'string') item = { value: item };
-    el.html(format.replace(/\{\{([^}]*)\}\}/g, function(match, field){
+    e.innerHTML = format.replace(/\{\{([^}]*)\}\}/g, function(match, field){
       return item[field];
-    }));
+    });
   }else{
-    el.html(format(item));
+    e.innerHTML = format(item);
   }
 
-  self.select = function(){
-    el.addClass('selected');
-  };
+  return e;
 
-  self.deselect = function(){
-    el.removeClass('selected');
-  };
+  // var el = self.el = $(e);
+  //
+  // self.select = function(){
+  //   el.addClass('selected');
+  // };
+  //
+  // self.deselect = function(){
+  //   el.removeClass('selected');
+  // };
 
 };

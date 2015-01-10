@@ -264,34 +264,58 @@ var fuzzyMatch = (function(){
 
   return fuzzyScore;
 })();
+var removeEventName = 'tagbox_destroy';
+
+// See jQuery UI
+$.cleanData = (function( orig ) {
+	return function( elems ) {
+		var events, elem, i;
+		for ( i = 0; (elem = elems[i]) != null; i++ ) {
+			try {
+
+				// Only trigger remove when necessary to save time
+				events = $._data( elem, "events" );
+				if ( events && events[removeEventName] ) {
+					$( elem ).triggerHandler( removeEventName );
+				}
+
+			// http://bugs.jquery.com/ticket/8235
+			} catch( e ) {}
+		}
+		orig( elems );
+	};
+})( $.cleanData );
 var DropdownRow = function(item, opts){
 
-  var self = this;
+  // var self = this;
 
-  var el = self.el = $('<div class="tagbox-item" />');
-
-  if(opts['itemClass']) el.addClass(opts['itemClass']);
-
-  self.item = item;
+  var e = document.createElement('div');
+  e.className = 'tagbox-item' + (opts['itemClass'] ? ' ' + opts['itemClass'] : '')
+  e.__item = item;
+  // self.item = item;
 
   var format = opts['rowFormat'];
 
   if(typeof format == 'string'){
     if(typeof item == 'string') item = { value: item };
-    el.html(format.replace(/\{\{([^}]*)\}\}/g, function(match, field){
+    e.innerHTML = format.replace(/\{\{([^}]*)\}\}/g, function(match, field){
       return item[field];
-    }));
+    });
   }else{
-    el.html(format(item));
+    e.innerHTML = format(item);
   }
 
-  self.select = function(){
-    el.addClass('selected');
-  };
+  return e;
 
-  self.deselect = function(){
-    el.removeClass('selected');
-  };
+  // var el = self.el = $(e);
+  //
+  // self.select = function(){
+  //   el.addClass('selected');
+  // };
+  //
+  // self.deselect = function(){
+  //   el.removeClass('selected');
+  // };
 
 };
 var CompletionDropdown = function(tagbox, opts){
@@ -303,6 +327,20 @@ var CompletionDropdown = function(tagbox, opts){
   var el = self.el = $('<div class="tagbox-dropdown"><div class="tagbox-list"></div></div>')
     .css({
       maxHeight: opts['maxHeight']
+    })
+    .on('mousedown', function(){
+      tagbox.dontHide = true;
+    }).on('mouseup', function(){
+      tagbox.dontHide = false;
+    }).on('mousemove', function(e){
+      var r = $(e.target).closest('.tagbox-item');
+      if(!r.length) return;
+      selectRow(r[0]);
+    }).on('click', '.tagbox-item:not(.new-item)', function(e){
+      var r = $(e.target).closest('.tagbox-item');
+      if(!r.length) return;
+      var item = r[0].__item;
+      tagbox.addToken(item);
     })
     .hide();
 
@@ -317,7 +355,13 @@ var CompletionDropdown = function(tagbox, opts){
       });
   }
 
+  self.remove = function(){
+    self.el.remove();
+  };
+
   self.updatePosition = function(input){
+    if(!el.parent().length) return;
+
     var o1 = el.offset();
     var o2 = input.offset();
     var o3 = el.parent().offset();
@@ -348,7 +392,7 @@ var CompletionDropdown = function(tagbox, opts){
   };
 
   self.getSelected = function(){
-    if(selectedRow) return selectedRow.item;
+    if(selectedRow) return selectedRow.__item;
   };
 
   self.selectNext = function(){
@@ -380,7 +424,7 @@ var CompletionDropdown = function(tagbox, opts){
 
   function selectRow(idx, scrollWithTimeout){
     if(selectedRow){
-      selectedRow.deselect();
+      $(selectedRow).removeClass('selected');
     }
     newRow && newRow.removeClass('selected');
     if(typeof idx !== 'number'){
@@ -388,14 +432,14 @@ var CompletionDropdown = function(tagbox, opts){
     }
     if(idx >= 0){
       selectedRow = rows[idx];
-      selectedRow.select();
+      $(selectedRow).addClass('selected');
       clearTimeout(scrollTimeout);
       if(scrollWithTimeout){
         scrollTimeout = setTimeout(function(){
-          scrollToRow(selectedRow.el);
+          scrollToRow(selectedRow);
         }, 80);
       }else{
-        scrollToRow(selectedRow.el);
+        scrollToRow(selectedRow);
       }
     }else{
       selectedRow = false;
@@ -404,7 +448,16 @@ var CompletionDropdown = function(tagbox, opts){
     selectedIndex = idx;
   }
 
+  var srto, sr;
+
   function scrollToRow(r){
+    clearTimeout(srto);
+    sr = r;
+    srto = setTimeout(reallyScrollToRow, 10);
+  }
+
+  function reallyScrollToRow(){
+    var r = $(sr);
     var o = r.offset().top - el.offset().top;
     if(o < 0){
       el.scrollTop(o + el.scrollTop());
@@ -427,23 +480,28 @@ var CompletionDropdown = function(tagbox, opts){
     el.find('.tagbox-list').empty();
     rows = [];
 
+    var tl = el.find('.tagbox-list')[0];
+
     if(items.length > 0){
-      for(var i = 0; i < Math.min(items.length, opts['maxListItems']); i += 1){
-        var row = new DropdownRow(items[i], opts);
-        row.el.appendTo(el.find('.tagbox-list'));
-        row.el.on('mouseover', function(row){ return function(){
-          selectRow(row, true);
-        }; }(row));
-        row.el.on('mousedown', function(){
-          tagbox.dontHide = true;
-        }).on('mouseup', function(){
-          tagbox.dontHide = false;
-        });
-        row.el.on('click', function(item){ return function(){
-          tagbox.addToken(item);
-        }; }(items[i]));
+      function add(i){
+        var row = DropdownRow(items[i], opts);
+        tl.appendChild(row);
+        // row.el.appendTo(el.find('.tagbox-list'));
+        // row.__i = i;
+        // row.el.on('mouseover', function(row){ return function(){
+        //   selectRow(row, true);
+        // }; }(row));
         rows.push(row);
       }
+
+      for(var i = 0; i < Math.min(50, items.length, opts['maxListItems']);) add(i++);
+
+      if(i === 50){
+        setTimeout(function(){
+          for(;i < Math.min(items.length, opts['maxListItems']);) add(i++);
+        }, 20);
+      }
+
       selectRow(0);
     }else if(!opts['allowNew']){
       $('<div class="tagbox-item empty"/>')
@@ -513,7 +571,7 @@ var TagBox = function(el, opts){
     .hide();
   self.options = opts;
 
-  var wrapper = self.wrapper = $('<div class="tagbox-wrapper" />')
+  var wrapper = self.wrapper = $('<div class="tagbox-wrapper empty" />')
     .click(function(e){
       var target = $(e.target).closest('input, .tagbox-token, .tagbox-wrapper');
 
@@ -559,7 +617,7 @@ var TagBox = function(el, opts){
       setTimeout(function(){
         if(!self.dontHide) dropdown.hide();
         wrapper.removeClass('focus');
-      }, 50);
+      }, 20);
       input.triggerHandler('blur');
     })
     .on('keydown', handleKeyDown)
@@ -569,6 +627,12 @@ var TagBox = function(el, opts){
       updateDropdown();
     })
     .appendTo(wrapper);
+
+  self['focus'] = _focus;
+
+  function _focus(){
+    newInput.focus();
+  }
 
   var resizer = $('<span />')
     .appendTo(wrapper)
@@ -589,8 +653,10 @@ var TagBox = function(el, opts){
 
   dropdown.el.appendTo(opts['dropdownContainer']);
 
+  self['items'] = opts['items'];
+
   if(input.val()){
-    var items = opts['items'];
+    var items = self['items'];
     var bits = input.val().split(opts['delimiter']);
     var found;
     for(var i = 0; i < bits.length; i += 1){
@@ -610,13 +676,16 @@ var TagBox = function(el, opts){
 
   var ready = true;
 
+  var id = Math.random().toString().slice(2);
+
   resizeInputBox(true);
-  $(window).on('resize', function(){
+  $(window).on('resize.' + id, function(){
     resizeInputBox(true);
   });
 
   setTimeout(function(){
     resizeInputBox(true);
+    if(!dropdown.el.parent().length) dropdown.el.appendTo(opts['dropdownContainer']);
   }, 500);
 
 
@@ -733,6 +802,7 @@ var TagBox = function(el, opts){
     t.el.css('maxWidth', self.wrapper.width());
 
     self.tokens.push(t);
+    wrapper.removeClass('empty');
 
     if(ready) newInput.val('');
     resizeInputBox(true);
@@ -751,6 +821,8 @@ var TagBox = function(el, opts){
     var idx = self.tokens.indexOf(token);
 
     self.tokens.splice(idx, 1);
+
+    if(self.tokens.length === 0) wrapper.addClass('empty');
 
     if(token === selectedToken) selectedToken = undefined;
 
@@ -823,20 +895,27 @@ var TagBox = function(el, opts){
     return false;
   }
 
+  var ddto;
+
   function updateDropdown(){
-    var items = opts['items'];
+    clearTimeout(ddto);
+    ddto = setTimeout(reallyUpdateDropdown, 20);
+  }
+
+  function reallyUpdateDropdown(){
+    var items = self['items'];
     var itemsToShow = [];
     var term = newInput.val();
     var relevance = scoresObject();
 
-    self.wrapper.removeClass('invalid');
+    wrapper.removeClass('invalid');
 
     if(self.tokens.length === opts['maxItems']){
       dropdown.hide();
       newInput.removeAttr('placeholder');
       return;
     }else{
-      newInput.attr('placeholder', thePlaceholder)
+      newInput.attr('placeholder', thePlaceholder);
     }
 
     if(term === '' && !opts['autoShow']){
@@ -876,9 +955,9 @@ var TagBox = function(el, opts){
   }
 
   function resizeInputBox(force){
-    if(self.currentInput == newInput.val() && (force !== true)) return;
+    if(destroyed || (self.currentInput == newInput.val() && (force !== true))) return;
 
-    self.wrapper.toggleClass('full', self.tokens.length === opts['maxItems']);
+    wrapper.toggleClass('full', self.tokens.length === opts['maxItems']);
 
     deselectCurrentToken();
 
@@ -891,9 +970,9 @@ var TagBox = function(el, opts){
 
     newInput.width(
       Math.min(
-        self.wrapper.width() - 5,
+        wrapper.width() - 5,
         Math.max(
-          self.wrapper.width() - newInput.offset().left + self.wrapper.offset().left + 5,
+          wrapper.width() - newInput.offset().left + wrapper.offset().left + 5,
           resizer.width(),
           1
         )
@@ -904,6 +983,23 @@ var TagBox = function(el, opts){
   }
 
   dontFocus = false;
+
+  var destroyed;
+
+  function destroy(){
+    if(destroyed) return;
+    destroyed = true;
+
+    if(self.wrapper.parent()) self.wrapper.remove();
+    if(self.input.parent()) self.input.remove();
+    dropdown.remove();
+    $(window).unbind('resize.' + id);
+
+    input = wrapper = dropdown = self.input = self.wrapper = self.dropdown = null;
+  }
+
+  input.on(removeEventName, destroy);
+  wrapper.on(removeEventName, destroy);
 
 };
 $.fn['tagbox'] = function(opts){
